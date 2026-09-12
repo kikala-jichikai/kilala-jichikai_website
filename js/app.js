@@ -16,13 +16,13 @@
 // ==========================================
 
 const SHEET_ID = '1rwAyehf35erUJ_RAnHhblQTaVg5f2v0Tmm7LZEKi5pQ';
-const NOTICE_GID = '0';                 // お知らせシートのgid
-const EVENT_GID = '895056638';          // 行事予定シートのgid
+const NOTICE_GID = '0';
+const EVENT_GID = '895056638';
 
 const NOTICE_URL = 
-  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${NOTICE_GID}`;
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${NOTICE_GID}`;
 const EVENT_URL = 
-  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${EVENT_GID}`;
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${EVENT_GID}`;
 
 // 新着マークを表示する日数（この日数以内の投稿にNEWバッジを表示）
 const NEW_THRESHOLD_DAYS = 3;
