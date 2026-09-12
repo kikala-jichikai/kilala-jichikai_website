@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>キララガーデン自治会</title>
 
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic:wght@400;700&display=swap" rel="stylesheet">
 
+    <!-- CSS (cssフォルダ内のstyle.cssを読み込み) -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -30,14 +32,14 @@
 
 <main>
 
-    <!-- お知らせタブ（Googleシートから動的生成） -->
+    <!-- お知らせタブ（JavaScriptで動的生成） -->
     <section id="notice" class="tab-content active">
         <div id="notice-container">
             <p id="loading">読み込み中...</p>
         </div>
     </section>
 
-    <!-- 今月の掲示板・回覧タブ（固定コンテンツ） -->
+    <!-- 今月の掲示板・回覧タブ -->
     <section id="board" class="tab-content">
         <div class="board-highlight">
             <p style="margin-bottom: 1rem;">さいたま市中央区が発行する、今月の掲示ポスター・回覧文書はこちらから確認できます。</p>
@@ -50,19 +52,19 @@
                 </li>
             </ul>
         </div>
-        <p style="color: #888; font-size: 0.9rem;">
+        <p style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">
             ※上記は「さいたま市」全体の掲示物ページです。中央区独自の情報も含まれます。
         </p>
     </section>
 
-    <!-- 行事予定タブ（Googleシートから動的生成） -->
+    <!-- 行事予定タブ（JavaScriptで動的生成） -->
     <section id="event" class="tab-content">
         <div id="event-container">
             <p>読み込み中...</p>
         </div>
     </section>
 
-    <!-- 自治会についてタブ（固定コンテンツ） -->
+    <!-- 自治会についてタブ -->
     <section id="about" class="tab-content">
         <div class="info-card">
             <dl>
@@ -81,7 +83,7 @@
         </div>
     </section>
 
-    <!-- ご意見・ご要望タブ（固定コンテンツ） -->
+    <!-- ご意見・ご要望タブ -->
     <section id="contact" class="tab-content">
         <div class="notice-warning">
             <p><strong>△ ご注意ください</strong></p>
@@ -89,13 +91,12 @@
                 こちらは<strong>自治会</strong>へのご意見・ご要望の窓口です。<br>
                 マンションの管理・修繕・共用部分等に関する<strong>管理組合（理事会）</strong>へのお問い合わせはご遠慮ください。<br>
             </p>
-            <p></p>
-            <p>
+            <p style="margin-top: 0.5rem;">
                 ※管理組合に関するお問い合わせは、別途管理組合の窓口（管理人室）までご連絡をお願いいたします。
             </p>
         </div>
 
-        <div class="info-card">
+        <div class="info-card" style="margin-top: 1rem;">
             <p style="margin-bottom: 1rem;">
                 自治会では、以下のような地域コミュニティ活動に関するご意見・ご要望を受け付けております。
             </p>
@@ -110,7 +111,7 @@
             <p style="margin-top: 1.5rem;">
                 ご意見・ご要望は、下記メールアドレスまでお気軽にお寄せください。
             </p>
-            <p style="margin-top: 1rem;">
+            <p style="margin-top: 0.5rem;">
                 <a href="mailto:kilala-jichi@gmail.com?subject=【ご意見・ご要望】" class="mail-link">
                     kilala-jichi@gmail.com
                 </a>
@@ -118,7 +119,7 @@
         </div>
     </section>
 
-    <!-- リンク集タブ（固定コンテンツ） -->
+    <!-- リンク集タブ -->
     <section id="links" class="tab-content">
         <h3 class="section-heading">行政サイト</h3>
         <ul class="link-list">
@@ -136,7 +137,7 @@
             </li>
         </ul>
 
-        <h3 class="section-heading">防災・安全情報</h3>
+        <h3 class="section-heading" style="margin-top: 1.5rem;">防災・安全情報</h3>
         <ul class="link-list">
             <li>
                 <a href="https://www.city.saitama.lg.jp/001/011/015/002/001/p047531.html" target="_blank" rel="noopener noreferrer">
@@ -165,6 +166,7 @@
     <p>&copy; キララガーデン自治会</p>
 </footer>
 
+<!-- JS (jsフォルダ内のapp.jsを読み込み) -->
 <script src="js/app.js"></script>
 </body>
 </html>
