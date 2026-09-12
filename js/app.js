@@ -1,5 +1,6 @@
 // Googleスプレッドシート（Web API）のURL
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwc0s_P-Yt_T--_xR2QfGgP1QvR2rM9N7VvE7o_/exec'; // ※お使いのGAS WebアプリURLを設定
+
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwc0sP-YtT--xR2QfGgP1QvR2rM9N7VvE7o/exec';
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. タブ切り替え処理
