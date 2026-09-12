@@ -1,8 +1,8 @@
 @charset "UTF-8";
 
-/* ==========================================================================
+/* ==========================================
    Base Settings & Variables
-   ========================================================================== */
+   ========================================== */
 :root {
     --primary-color: #2c3e50;
     --secondary-color: #3498db;
@@ -29,14 +29,14 @@ body {
     line-height: 1.6;
 }
 
-/* ==========================================================================
+/* ==========================================
    Header & Navigation
-   ========================================================================== */
+   ========================================== */
 header {
     background-color: var(--card-bg);
     border-bottom: 2px solid var(--border-color);
     padding: 1.5rem 1rem 0 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .header-title {
@@ -55,23 +55,23 @@ header {
     display: block;
     font-size: 1.8rem;
     color: var(--primary-color);
-    margin-top: 0.2rem;
+    font-weight: bold;
 }
 
 .tab-nav {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
     gap: 0.5rem;
+    flex-wrap: wrap;
     max-width: 1000px;
     margin: 0 auto;
 }
 
 .tab-button {
-    background: none;
+    padding: 0.75rem 1.25rem;
     border: none;
-    padding: 0.8rem 1.2rem;
-    font-family: inherit;
+    background-color: transparent;
+    font-family: var(--font-family);
     font-size: 0.95rem;
     font-weight: bold;
     color: var(--text-muted);
@@ -89,9 +89,9 @@ header {
     border-bottom-color: var(--secondary-color);
 }
 
-/* ==========================================================================
+/* ==========================================
    Main Content Layout
-   ========================================================================== */
+   ========================================== */
 main {
     max-width: 900px;
     margin: 2rem auto;
@@ -106,148 +106,157 @@ main {
     display: block;
 }
 
-/* ==========================================================================
-   Notice Cards (お知らせ)
-   ========================================================================== */
-.notice-card {
+/* ==========================================
+   Cards & Notice Items
+   ========================================== */
+.notice-card, .info-card, .board-highlight {
     background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-}
-
-.notice-header {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 0.8rem;
-    flex-wrap: wrap;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
 }
 
 .notice-date {
     font-size: 0.85rem;
     color: var(--text-muted);
+    margin-right: 0.5rem;
 }
 
 .notice-category {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: #ffffff;
     font-size: 0.75rem;
-    padding: 0.2rem 0.6rem;
+    padding: 0.2rem 0.5rem;
     border-radius: 4px;
-    background-color: #e2e8f0;
-    color: var(--primary-color);
+    margin-right: 0.5rem;
+}
+
+.new-badge {
+    background-color: var(--accent-color);
+    color: #ffffff;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.end-badge {
+    background-color: var(--warning-color);
+    color: #ffffff;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
     font-weight: bold;
 }
 
 .notice-title {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     color: var(--primary-color);
-    margin-bottom: 0.8rem;
+    margin: 0.5rem 0 1rem 0;
 }
 
 .notice-body {
-    font-size: 0.95rem;
     white-space: pre-wrap;
-    word-break: break-word;
-}
-
-/* ==========================================================================
-   Cards & Lists
-   ========================================================================== */
-.info-card, .board-highlight {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 1.5rem;
     margin-bottom: 1rem;
 }
 
-dl {
-    display: grid;
-    grid-template-columns: 120px 1fr;
-    gap: 0.8rem 1rem;
+.notice-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-top: 1rem;
+    display: block;
 }
 
-dt {
+.pdf-link, .mail-link {
+    display: inline-block;
+    margin-top: 0.75rem;
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.pdf-link:hover, .mail-link:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================
+   Static Pages (About / Contact / Links)
+   ========================================== */
+.info-card dl {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    row-gap: 1rem;
+}
+
+.info-card dt {
     font-weight: bold;
     color: var(--primary-color);
 }
 
-dd {
-    color: var(--text-color);
-}
-
 .notice-warning {
-    background-color: #fff9e6;
-    border-left: 4px solid var(--warning-color);
-    padding: 1rem 1.2rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
 }
 
 .topic-list, .link-list {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+}
+
+.link-list {
     list-style: none;
-}
-
-.topic-list li {
-    position: relative;
-    padding-left: 1.2rem;
-    margin-bottom: 0.5rem;
-}
-
-.topic-list li::before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: var(--secondary-color);
-    font-weight: bold;
+    padding-left: 0;
 }
 
 .link-list li {
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.75rem;
 }
 
 .link-list a {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0.75rem 1rem;
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    padding: 1rem;
     border-radius: 6px;
-    color: var(--secondary-color);
+    color: var(--primary-color);
     text-decoration: none;
     font-weight: bold;
-    transition: background-color 0.2s;
 }
 
 .link-list a:hover {
-    background-color: #f0f7ff;
+    background-color: #edf2f7;
 }
 
 .external-icon {
     font-size: 0.75rem;
-    background-color: #edf2f7;
-    color: #4a5568;
-    padding: 0.2rem 0.5rem;
-    border-radius: 3px;
-    font-weight: normal;
-}
-
-.mail-link {
-    color: var(--secondary-color);
-    text-decoration: underline;
+    background-color: #e2e8f0;
+    color: var(--text-muted);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
 }
 
 .section-heading {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     color: var(--primary-color);
+    margin: 1.5rem 0 1rem 0;
     border-bottom: 2px solid var(--secondary-color);
     padding-bottom: 0.3rem;
-    margin-bottom: 1rem;
 }
 
+/* ==========================================
+   Footer
+   ========================================== */
 footer {
     text-align: center;
     padding: 2rem 1rem;
@@ -257,17 +266,19 @@ footer {
     margin-top: 3rem;
 }
 
-/* スマホ用レイアウト調整 */
+/* ==========================================
+   Responsive Settings
+   ========================================== */
 @media (max-width: 600px) {
-    dl {
+    .info-card dl {
         grid-template-columns: 1fr;
-        gap: 0.2rem;
+        row-gap: 0.3rem;
     }
-    dt {
-        margin-top: 0.8rem;
+    .info-card dt {
+        margin-top: 0.75rem;
     }
     .tab-button {
-        padding: 0.6rem 0.8rem;
         font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
     }
 }
