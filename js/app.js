@@ -1,165 +1,244 @@
-// Googleスプレッドシート（Web API）のURL
+// ==========================================
+// 【重要・引き継ぎ担当者向け】
+// このファイルはGoogleスプレッドシートからお知らせを
+// 取得して表示するためのコードです。
+//
+// スプレッドシートのURLを変更する場合は
+// 下記の SHEET_ID を書き換えてください。
+//
+// 「お知らせ」と「行事予定」で別シートを参照する構成です。
+// gid（シートのID）はスプレッドシートのURLから確認できます。
+// 例）.../edit#gid=123456789 の「123456789」部分
+//
+// 【列構成（お知らせ・行事予定シート共通）】
+// A列:日付(掲載開始日を兼ねる) B列:カテゴリ C列:タイトル
+// D列:本文 E列:画像URL F列:PDF URL G列:掲載終了日
+// ==========================================
 
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwc0sP-YtT--xR2QfGgP1QvR2rM9N7VvE7o/exec';
+const SHEET_ID = '1rwAyehf35erUJ_RAnHhblQTaVg5f2v0Tmm7LZEKi5pQ';
+const NOTICE_GID = '0';
+const EVENT_GID = '895056638';
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. タブ切り替え処理
-    initTabs();
+const NOTICE_URL = 
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${NOTICE_GID}`;
+const EVENT_URL = 
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${EVENT_GID}`;
 
-    // 2. Googleスプレッドシートデータの取得処理
-    fetchSpreadsheetData();
-});
+// 新着マークを表示する日数（この日数以内の投稿にNEWバッジを表示）
+const NEW_THRESHOLD_DAYS = 3;
 
-/**
- * タブ切替のセットアップ
- */
+// 「まもなく終了」マークを表示する日数（終了日までこの日数以内でバッジを表示）
+const ENDING_SOON_THRESHOLD_DAYS = 3;
+
+// ==========================================
+// タブ切り替え機能
+// ==========================================
 function initTabs() {
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabContents = document.querySelectorAll('.tab-content');
 
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
-            const targetTab = button.getAttribute('data-tab');
+            const target = button.dataset.tab;
 
-            // すべてのボタンとコンテンツから active を解除
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
+            tabButtons.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
 
-            // 選択されたタブとコンテンツに active を付与
             button.classList.add('active');
-            const targetElement = document.getElementById(targetTab);
-            if (targetElement) {
-                targetElement.classList.add('active');
-            }
+            document.getElementById(target).classList.add('active');
         });
     });
 }
 
-/**
- * Google Apps Script (GAS) 経由でデータを取得
- */
-async function fetchSpreadsheetData() {
-    const noticeContainer = document.getElementById('notice-container');
-    const eventContainer = document.getElementById('event-container');
+// ==========================================
+// お知らせ読み込み
+// ==========================================
+async function loadNotices() {
+    const container = document.getElementById('notice-container');
+    await loadAndRender(NOTICE_URL, container, 'お知らせ');
+}
 
+// ==========================================
+// 行事予定読み込み
+// ==========================================
+async function loadEvents() {
+    const container = document.getElementById('event-container');
+    await loadAndRender(EVENT_URL, container, 'イベント');
+}
+
+// ==========================================
+// 共通の読み込み・描画処理
+// ==========================================
+async function loadAndRender(url, container, defaultCategory) {
     try {
-        const response = await fetch(GAS_API_URL);
+        const response = await fetch(url);
+
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-
-        // お知らせデータの描画
-        if (data.notices && data.notices.length > 0) {
-            renderNotices(data.notices, noticeContainer);
-        } else {
-            noticeContainer.innerHTML = '<p class="info-card">現在お知らせはありません。</p>';
+            throw new Error('スプレッドシートの取得に失敗しました');
         }
 
-        // 行事予定データの描画
-        if (data.events && data.events.length > 0) {
-            renderEvents(data.events, eventContainer);
-        } else {
-            eventContainer.innerHTML = '<p class="info-card">現在予定されている行事はありません。</p>';
-        }
+        const csvText = await response.text();
+        const items = parseCSV(csvText);
+
+        renderItems(items, container, defaultCategory);
 
     } catch (error) {
-        console.error('データの取得に失敗しました:', error);
-        if (noticeContainer) {
-            noticeContainer.innerHTML = '<p class="info-card" style="color: #e74c3c;">お知らせの読み込みに失敗しました。</p>';
-        }
-        if (eventContainer) {
-            eventContainer.innerHTML = '<p class="info-card" style="color: #e74c3c;">行事予定の読み込みに失敗しました。</p>';
-        }
+        container.innerHTML = `
+            <div class="error-message">
+                <p>情報の読み込みに失敗しました。</p>
+                <p>しばらくしてから再度アクセスしてください。</p>
+            </div>
+        `;
+        console.error('エラー詳細:', error);
     }
 }
 
-/**
- * お知らせ一覧の表示処理
- */
-function renderNotices(notices, container) {
-    container.innerHTML = ''; // ローディング表示を消去
+// ==========================================
+// CSVパース処理
+// スプレッドシートの列構成：
+// A列:日付(=掲載開始日) B列:カテゴリ C列:タイトル D列:本文
+// E列:画像URL F列:PDF URL G列:掲載終了日
+// ==========================================
+function parseCSV(csvText) {
+    const lines = csvText.trim().split('\n');
 
-    notices.forEach(item => {
-        const card = document.createElement('article');
-        card.className = 'notice-card';
-
-        const header = document.createElement('div');
-        header.className = 'notice-header';
-
-        if (item.date) {
-            const dateSpan = document.createElement('span');
-            dateSpan.className = 'notice-date';
-            dateSpan.textContent = formatDate(item.date);
-            header.appendChild(dateSpan);
+    const items = [];
+    for (let i = 1; i < lines.length; i++) {
+        const values = parseCSVLine(lines[i]);
+        if (values[0]) {
+            items.push({
+                date: values[0],
+                category: values[1] || '',
+                title: values[2] || '',
+                body: values[3] || '',
+                imageUrl: values[4] || '',
+                pdfUrl: values[5] || '',
+                endDate: values[6] || ''
+            });
         }
+    }
 
-        if (item.category) {
-            const categorySpan = document.createElement('span');
-            categorySpan.className = 'notice-category';
-            categorySpan.textContent = item.category;
-            header.appendChild(categorySpan);
-        }
+    items.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        const title = document.createElement('h2');
-        title.className = 'notice-title';
-        title.textContent = item.title || '（タイトルなし）';
-
-        const body = document.createElement('div');
-        body.className = 'notice-body';
-        body.textContent = item.body || '';
-
-        card.appendChild(header);
-        card.appendChild(title);
-        card.appendChild(body);
-
-        container.appendChild(card);
-    });
+    return items;
 }
 
-/**
- * 行事予定一覧の表示処理
- */
-function renderEvents(events, container) {
-    container.innerHTML = ''; // ローディング表示を消去
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
 
-    events.forEach(item => {
-        const card = document.createElement('article');
-        card.className = 'notice-card';
-
-        const header = document.createElement('div');
-        header.className = 'notice-header';
-
-        if (item.date) {
-            const dateSpan = document.createElement('span');
-            dateSpan.className = 'notice-date';
-            dateSpan.textContent = formatDate(item.date);
-            header.appendChild(dateSpan);
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
         }
+    }
+    result.push(current.trim());
 
-        const title = document.createElement('h2');
-        title.className = 'notice-title';
-        title.textContent = item.title || '（行事名なし）';
-
-        const body = document.createElement('div');
-        body.className = 'notice-body';
-        body.textContent = item.body || item.detail || '';
-
-        card.appendChild(header);
-        card.appendChild(title);
-        card.appendChild(body);
-
-        container.appendChild(card);
-    });
+    return result.map(v => v.replace(/^"|"$/g, ''));
 }
 
-/**
- * 日付フォーマットの調整関数
- */
-function formatDate(dateStr) {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr; // 日付型として変換できない場合はそのまま返す
-    return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+// ==========================================
+// 掲載期間判定
+// A列(日付)を「掲載開始日」として扱う
+// G列(掲載終了日)が未設定なら「継続掲載」扱い
+// ==========================================
+function isVisible(dateStr, endDateStr) {
+    const now = new Date();
+
+    const startDate = new Date(dateStr);
+    if (now < startDate) return false; // まだ掲載開始日が来ていない（予約投稿）
+
+    if (endDateStr) {
+        const endDate = new Date(endDateStr);
+        endDate.setHours(23, 59, 59, 999);
+        if (now > endDate) return false; // 掲載終了日を過ぎている
+    }
+
+    return true;
 }
+
+// ==========================================
+// 新着判定
+// ==========================================
+function isNew(dateStr) {
+    const itemDate = new Date(dateStr);
+    const now = new Date();
+    const diffDays = (now - itemDate) / (1000 * 60 * 60 * 24);
+    return diffDays >= 0 && diffDays <= NEW_THRESHOLD_DAYS;
+}
+
+// ==========================================
+// まもなく終了判定
+// ==========================================
+function isEndingSoon(endDateStr) {
+    if (!endDateStr) return false; // 終了日未設定（無期限掲載）は対象外
+
+    const endDate = new Date(endDateStr);
+    const now = new Date();
+    const diffDays = (endDate - now) / (1000 * 60 * 60 * 24);
+    return diffDays >= 0 && diffDays <= ENDING_SOON_THRESHOLD_DAYS;
+}
+
+// ==========================================
+// 描画処理
+// ==========================================
+function renderItems(items, container, defaultCategory) {
+    // 掲載期間内のものだけに絞り込む
+    const visibleItems = items.filter(item => isVisible(item.date, item.endDate));
+
+    if (visibleItems.length === 0) {
+        container.innerHTML = '<p>現在情報はありません。</p>';
+        return;
+    }
+
+    const html = visibleItems.map(item => {
+        const category = item.category || defaultCategory;
+        const newBadge = isNew(item.date) ? '<span class="new-badge">NEW</span>' : '';
+        const endBadge = isEndingSoon(item.endDate) ? '<span class="end-badge">まもなく終了</span>' : '';
+
+        const pdfLink = item.pdfUrl
+            ? `<a href="${escapeHtml(item.pdfUrl)}" class="pdf-link" target="_blank" rel="noopener noreferrer">📄 資料PDFをダウンロード</a>`
+            : '';
+
+        const image = item.imageUrl
+            ? `<img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.title)}" class="notice-image">`
+            : '';
+
+        return `
+            <article class="notice-card">
+                <time class="notice-date">${escapeHtml(item.date)}</time>
+                <span class="notice-category">${escapeHtml(category)}</span>
+                ${newBadge}
+                ${endBadge}
+                <h2 class="notice-title">${escapeHtml(item.title)}</h2>
+                <p class="notice-body">${escapeHtml(item.body)}</p>
+                ${image}
+                ${pdfLink}
+            </article>
+        `;
+    }).join('');
+
+    container.innerHTML = html;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ==========================================
+// 初期化
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    initTabs();
+    loadNotices();
+    loadEvents();
+});
