@@ -6,23 +6,29 @@
 // スプレッドシートのURLを変更する場合は
 // 下記の SHEET_ID を書き換えてください。
 //
-// 「お知らせ」と「行事予定」で別シートを参照する構成です。
+// 「お知らせ」「行事予定」「リンク集」で別シートを参照する構成です。
 // gid（シートのID）はスプレッドシートのURLから確認できます。
 // 例）.../edit#gid=123456789 の「123456789」部分
 //
 // 【列構成（お知らせ・行事予定シート共通）】
 // A列:日付(掲載開始日を兼ねる) B列:カテゴリ C列:タイトル
 // D列:本文 E列:画像URL F列:PDF URL G列:掲載終了日
+//
+// 【列構成（リンク集シート）】
+// A列:カテゴリ B列:リンク名 C列:URL
 // ==========================================
 
 const SHEET_ID = '1rwAyehf35erUJ_RAnHhblQTaVg5f2v0Tmm7LZEKi5pQ';
 const NOTICE_GID = '0';
 const EVENT_GID = '895056638';
+const LINK_GID = '348535548';
 
 const NOTICE_URL = 
   `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${NOTICE_GID}`;
 const EVENT_URL = 
   `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${EVENT_GID}`;
+const LINK_URL = 
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${LINK_GID}`;
 
 // 新着マークを表示する日数（この日数以内の投稿にNEWバッジを表示）
 const NEW_THRESHOLD_DAYS = 3;
@@ -55,7 +61,7 @@ function initTabs() {
 // ==========================================
 async function loadNotices() {
     const container = document.getElementById('notice-container');
-    await loadAndRender(NOTICE_URL, container, 'お知らせ');
+    await loadAndRenderNotices(NOTICE_URL, container, 'お知らせ');
 }
 
 // ==========================================
@@ -63,13 +69,41 @@ async function loadNotices() {
 // ==========================================
 async function loadEvents() {
     const container = document.getElementById('event-container');
-    await loadAndRender(EVENT_URL, container, 'イベント');
+    await loadAndRenderNotices(EVENT_URL, container, 'イベント');
 }
 
 // ==========================================
-// 共通の読み込み・描画処理
+// リンク集読み込み
 // ==========================================
-async function loadAndRender(url, container, defaultCategory) {
+async function loadLinks() {
+    const container = document.getElementById('links-container');
+    try {
+        const response = await fetch(LINK_URL);
+
+        if (!response.ok) {
+            throw new Error('スプレッドシートの取得に失敗しました');
+        }
+
+        const csvText = await response.text();
+        const items = parseLinkCSV(csvText);
+
+        renderLinks(items, container);
+
+    } catch (error) {
+        container.innerHTML = `
+            <div class="error-message">
+                <p>情報の読み込みに失敗しました。</p>
+                <p>しばらくしてから再度アクセスしてください。</p>
+            </div>
+        `;
+        console.error('エラー詳細:', error);
+    }
+}
+
+// ==========================================
+// 共通の読み込み・描画処理（お知らせ・行事予定用）
+// ==========================================
+async function loadAndRenderNotices(url, container, defaultCategory) {
     try {
         const response = await fetch(url);
 
@@ -94,10 +128,7 @@ async function loadAndRender(url, container, defaultCategory) {
 }
 
 // ==========================================
-// CSVパース処理
-// スプレッドシートの列構成：
-// A列:日付(=掲載開始日) B列:カテゴリ C列:タイトル D列:本文
-// E列:画像URL F列:PDF URL G列:掲載終了日
+// CSVパース処理（お知らせ・行事予定用）
 // ==========================================
 function parseCSV(csvText) {
     const lines = csvText.trim().split('\n');
@@ -119,6 +150,28 @@ function parseCSV(csvText) {
     }
 
     items.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    return items;
+}
+
+// ==========================================
+// CSVパース処理（リンク集用）
+// A列:カテゴリ B列:リンク名 C列:URL
+// ==========================================
+function parseLinkCSV(csvText) {
+    const lines = csvText.trim().split('\n');
+
+    const items = [];
+    for (let i = 1; i < lines.length; i++) {
+        const values = parseCSVLine(lines[i]);
+        if (values[0] && values[1] && values[2]) {
+            items.push({
+                category: values[0],
+                name: values[1],
+                url: values[2]
+            });
+        }
+    }
 
     return items;
 }
@@ -146,19 +199,17 @@ function parseCSVLine(line) {
 
 // ==========================================
 // 掲載期間判定
-// A列(日付)を「掲載開始日」として扱う
-// G列(掲載終了日)が未設定なら「継続掲載」扱い
 // ==========================================
 function isVisible(dateStr, endDateStr) {
     const now = new Date();
 
     const startDate = new Date(dateStr);
-    if (now < startDate) return false; // まだ掲載開始日が来ていない（予約投稿）
+    if (now < startDate) return false;
 
     if (endDateStr) {
         const endDate = new Date(endDateStr);
         endDate.setHours(23, 59, 59, 999);
-        if (now > endDate) return false; // 掲載終了日を過ぎている
+        if (now > endDate) return false;
     }
 
     return true;
@@ -178,7 +229,7 @@ function isNew(dateStr) {
 // まもなく終了判定
 // ==========================================
 function isEndingSoon(endDateStr) {
-    if (!endDateStr) return false; // 終了日未設定（無期限掲載）は対象外
+    if (!endDateStr) return false;
 
     const endDate = new Date(endDateStr);
     const now = new Date();
@@ -187,10 +238,9 @@ function isEndingSoon(endDateStr) {
 }
 
 // ==========================================
-// 描画処理
+// 描画処理（お知らせ・行事予定用）
 // ==========================================
 function renderItems(items, container, defaultCategory) {
-    // 掲載期間内のものだけに絞り込む
     const visibleItems = items.filter(item => isVisible(item.date, item.endDate));
 
     if (visibleItems.length === 0) {
@@ -228,6 +278,44 @@ function renderItems(items, container, defaultCategory) {
     container.innerHTML = html;
 }
 
+// ==========================================
+// 描画処理（リンク集用・カテゴリ別グループ化）
+// ==========================================
+function renderLinks(items, container) {
+    if (items.length === 0) {
+        container.innerHTML = '<p>現在リンクはありません。</p>';
+        return;
+    }
+
+    // カテゴリごとにグループ化
+    const grouped = {};
+    items.forEach(item => {
+        if (!grouped[item.category]) {
+            grouped[item.category] = [];
+        }
+        grouped[item.category].push(item);
+    });
+
+    let html = '';
+    for (const [category, links] of Object.entries(grouped)) {
+        html += `<h3 class="section-heading">${escapeHtml(category)}</h3>`;
+        html += '<ul class="link-list">';
+        links.forEach(link => {
+            html += `
+                <li>
+                    <a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">
+                        <span>${escapeHtml(link.name)}</span>
+                        <span class="external-icon">↗ 外部サイト</span>
+                    </a>
+                </li>
+            `;
+        });
+        html += '</ul>';
+    }
+
+    container.innerHTML = html;
+}
+
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
@@ -241,4 +329,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initTabs();
     loadNotices();
     loadEvents();
+    loadLinks();
 });
