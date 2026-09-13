@@ -1,136 +1,331 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>キララガーデン自治会</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>キララガーデン自治会</title>
+  <style>
+    /* ==========================================
+       1. デフォルト（PC・共通）スタイル
+       ========================================== */
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fdfbf7;
+      color: #333333;
+    }
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&display=swap" rel="stylesheet">
+    /* PC版の既存レイアウト・コンテナ */
+    .pc-layout-wrapper {
+      display: block;
+    }
 
-    <link rel="stylesheet" href="css/style.css">
+    /* スマホ専用コンテナ（PCでは非表示） */
+    .mobile-home-container {
+      display: none;
+    }
+
+    /* 共通ヘッダー（PC用） */
+    .site-header {
+      background: #2e6f40;
+      color: #ffffff;
+      padding: 20px;
+      text-align: center;
+    }
+    .site-header .location {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    .site-header h1 {
+      margin: 5px 0 0 0;
+      font-size: 24px;
+    }
+
+    .main-content {
+      max-width: 960px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+
+    .card-box {
+      background: #ffffff;
+      border: 1px solid #d1ded3;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #718096;
+      font-size: 13px;
+    }
+
+
+    /* ==========================================
+       2. スマートフォン向け最適化スタイル
+          （画面幅 768px 以下で自動適用）
+       ========================================== */
+    @media screen and (max-width: 768px) {
+      /* PC用レイアウトを非表示にしてスマホ用レイアウトに切り替え */
+      .pc-layout-wrapper {
+        display: none !important;
+      }
+      .mobile-home-container {
+        display: block !important;
+        background-color: #fdfbf7;
+        min-height: 100vh;
+        padding-bottom: 40px;
+      }
+
+      /* スマホ用ヘッダー（インフォメーション・タワー） */
+      .mobile-header-area {
+        background: linear-gradient(135deg, #2e6f40, #235531);
+        color: #ffffff;
+        text-align: center;
+        padding: 20px 15px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      }
+      .mobile-header-area .sub-title {
+        font-size: 12px;
+        opacity: 0.9;
+        margin-bottom: 4px;
+      }
+      .mobile-header-area .main-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin: 0;
+        letter-spacing: 0.05em;
+      }
+
+      /* カード型ナビゲーションセクション */
+      .mobile-card-section {
+        padding: 20px 15px 10px 15px;
+      }
+      .section-heading {
+        font-size: 14px;
+        color: #2e6f40;
+        margin-bottom: 12px;
+        font-weight: bold;
+        border-left: 4px solid #2e6f40;
+        padding-left: 8px;
+      }
+      
+      /* カードグリッド（1列でスッキリ配置） */
+      .card-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .nav-card {
+        display: flex;
+        align-items: center;
+        background: #ffffff;
+        border: 1px solid #d1ded3;
+        border-radius: 8px;
+        padding: 12px 16px;
+        text-decoration: none;
+        color: #2e6f40;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        transition: background 0.2s;
+      }
+      .nav-card:active {
+        background: #f0f7f2;
+      }
+      .card-icon {
+        font-size: 18px;
+        margin-right: 12px;
+      }
+      .card-label {
+        font-size: 15px;
+        font-weight: bold;
+      }
+
+      /* メインコンテンツボックス（お知らせ等） */
+      .mobile-content-box {
+        margin: 15px;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 16px;
+        border-left: 4px solid #d97736;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+      .content-meta {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+        align-items: center;
+      }
+      .date-tag {
+        background: #faebd7;
+        color: #8c5200;
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+      .category-tag {
+        background: #2e6f40;
+        color: #ffffff;
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 4px;
+      }
+      .content-body {
+        font-size: 15px;
+        color: #333333;
+        margin: 0;
+      }
+
+      /* その他の情報・細かいリンク集（リスト形式） */
+      .mobile-sub-links {
+        margin: 25px 15px 15px 15px;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 16px;
+        border: 1px solid #e2e8f0;
+      }
+      .sub-heading {
+        font-size: 14px;
+        color: #4a5568;
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-weight: bold;
+        border-bottom: 1px solid #edf2f7;
+        padding-bottom: 6px;
+      }
+      .simple-link-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .simple-link-list li {
+        border-bottom: 1px solid #f7fafc;
+      }
+      .simple-link-list li:last-child {
+        border-bottom: none;
+      }
+      .simple-link-list a {
+        display: block;
+        padding: 10px 4px;
+        color: #2e6f40;
+        text-decoration: none;
+        font-size: 14px;
+      }
+      .simple-link-list a:hover {
+        color: #1a3e24;
+        text-decoration: underline;
+      }
+
+      /* フッター */
+      .mobile-footer {
+        text-align: center;
+        font-size: 12px;
+        color: #718096;
+        margin-top: 30px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<header>
-    <h1 class="header-title">
-        <span class="sub-line">さいたま市中央区円阿弥</span>
-        <span class="main-line">キララガーデン自治会</span>
-    </h1>
-    <nav class="tab-nav">
-        <button class="tab-button active" data-tab="notice">お知らせ</button>
-        <button class="tab-button" data-tab="board">今月の掲示板・回覧</button>
-        <button class="tab-button" data-tab="event">行事予定</button>
-        <button class="tab-button" data-tab="about">自治会について</button>
-        <button class="tab-button" data-tab="contact">ご意見・ご要望</button>
-        <button class="tab-button" data-tab="links">リンク集</button>
-    </nav>
-</header>
+  <!-- ==========================================
+       PC向けレイアウト（従来通り完全維持）
+       ========================================== -->
+  <div class="pc-layout-wrapper">
+    <header class="site-header">
+      <div class="location">さいたま市中央区円阿弥</div>
+      <h1>キララガーデン自治会</h1>
+    </header>
+    
+    <div class="main-content">
+      <div class="card-box">
+        <h2>お知らせ</h2>
+        <p>2026/09/01: 特にありません</p>
+      </div>
+      <div class="card-box">
+        <h2>今月の掲示板・回覧</h2>
+        <p>今月の回覧板情報がここに表示されます。</p>
+      </div>
+    </div>
 
-<main>
+    <footer>
+      <p>&copy; キララガーデン自治会</p>
+    </footer>
+  </div>
 
-    <!-- お知らせタブ（Googleシートから動的生成） -->
-    <section id="notice" class="tab-content active">
-        <div id="notice-container">
-            <p id="loading">読み込み中...</p>
-        </div>
+
+  <!-- ==========================================
+       スマートフォン向けレイアウト（カード型＋下部リスト）
+       ========================================== -->
+  <div class="mobile-home-container">
+    
+    <!-- ヘルパー情報・エリア -->
+    <header class="mobile-header-area">
+      <div class="sub-title">さいたま市中央区円阿弥</div>
+      <h1 class="main-title">キララガーデン自治会</h1>
+    </header>
+
+    <!-- 1. 主要な入り口（カード型・1列配置） -->
+    <section class="mobile-card-section">
+      <h2 class="section-heading">メニュー</h2>
+      <div class="card-grid">
+        <a href="#oshirase" class="nav-card">
+          <span class="card-icon">📢</span>
+          <span class="card-label">お知らせ</span>
+        </a>
+        <a href="#keijiban" class="nav-card">
+          <span class="card-icon">📋</span>
+          <span class="card-label">今月の掲示板・回覧</span>
+        </a>
+        <a href="#gyoji" class="nav-card">
+          <span class="card-icon">📅</span>
+          <span class="card-label">行事予定</span>
+        </a>
+        <a href="#about" class="nav-card">
+          <span class="card-icon">🏠</span>
+          <span class="card-label">自治会について</span>
+        </a>
+        <a href="#contact" class="nav-card">
+          <span class="card-icon">💬</span>
+          <span class="card-label">ご意見・ご要望</span>
+        </a>
+        <a href="#links" class="nav-card">
+          <span class="card-icon">🔗</span>
+          <span class="card-label">リンク集</span>
+        </a>
+      </div>
     </section>
 
-    <!-- 今月の掲示板・回覧タブ（固定コンテンツ） -->
-    <section id="board" class="tab-content">
-        <div class="board-highlight">
-            <p style="margin-bottom: 1rem;">さいたま市中央区が発行する、今月の掲示ポスター・回覧文書はこちらから確認できます。</p>
-            <ul class="link-list" style="margin-bottom: 0;">
-                <li>
-                    <a href="https://www.city.saitama.lg.jp/001/013/007/p074093.html" target="_blank" rel="noopener noreferrer">
-                        <span>📌 今月の掲示ポスター・回覧文書（さいたま市）</span>
-                        <span class="external-icon">↗ 外部サイト</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <p style="color: #888; font-size: 0.9rem;">
-            ※上記は「さいたま市」全体の掲示物ページです。中央区独自の情報も含まれます。
-        </p>
+    <!-- 2. 最新のお知らせプレビュー -->
+    <section class="mobile-content-box">
+      <div class="content-meta">
+        <span class="date-tag">2026/09/01</span>
+        <span class="category-tag">お知らせ</span>
+      </div>
+      <p class="content-body">特にありません</p>
     </section>
 
-    <!-- 行事予定タブ（Googleシートから動的生成） -->
-    <section id="event" class="tab-content">
-        <div id="event-container">
-            <p>読み込み中...</p>
-        </div>
+    <!-- 3. その他の情報・細かいリンク集（リスト形式・与野鴻沼太鼓含む） -->
+    <section class="mobile-sub-links">
+      <h3 class="sub-heading">その他の情報・関連リンク</h3>
+      <ul class="simple-link-list">
+        <li><a href="https://www.youtube.com/watch?v=5yOvgZURQSE" target="_blank" rel="noopener">与野鴻沼太鼓</a></li>
+        <li><a href="#kiyaku">自治会規約・細則</a></li>
+        <li><a href="#archive">過去の回覧板アーカイブ</a></li>
+        <li><a href="#bosai">防災・防犯の手引き</a></li>
+      </ul>
     </section>
 
-    <!-- 自治会についてタブ（固定コンテンツ） -->
-    <section id="about" class="tab-content">
-        <div class="info-card">
-            <dl>
-                <dt>自治会名</dt>
-                <dd>キララガーデン自治会</dd>
+    <!-- フッター -->
+    <footer class="mobile-footer">
+      <p>&copy; キララガーデン自治会</p>
+    </footer>
 
-                <dt>設立</dt>
-                <dd>2007年9月</dd>
+  </div>
 
-                <dt>自治会所在地</dt>
-                <dd>〒338-0007 さいたま市中央区円阿弥5-8-50</dd>
-
-                <dt>お問い合わせ</dt>
-                <dd><a href="mailto:kilala-jichi@gmail.com?subject=【お問い合わせ】" class="mail-link">kilala-jichi@gmail.com</a></dd>
-            </dl>
-        </div>
-    </section>
-
-    <!-- ご意見・ご要望タブ（固定コンテンツ） -->
-    <section id="contact" class="tab-content">
-        <div class="notice-warning">
-            <p><strong>⚠️ ご注意ください</strong></p>
-            <p>
-                こちらは<strong>自治会</strong>へのご意見・ご要望の窓口です。<br>
-                マンションの管理・修繕・共用部分等に関する<strong>管理組合（理事会）</strong>へのお問い合わせはご遠慮ください。<br>
-            </p>
-            <p></p>
-            <p>
-                ※管理組合に関するお問い合わせは、別途管理組合の窓口（管理人室）までご連絡をお願いいたします。
-            </p>
-        </div>
-
-        <div class="info-card">
-            <p style="margin-bottom: 1rem;">
-                自治会では、以下のような地域コミュニティ活動に関するご意見・ご要望を受け付けております。
-            </p>
-            <ul class="topic-list">
-                <li>🏘️ 地域コミュニティ活動について</li>
-                <li>🛡️ 防犯・防災に関するご相談</li>
-                <li>🎉 地域行事・イベントへの参加について</li>
-                <li>📋 回覧板・掲示物に関するお問い合わせ</li>
-                <li>💬 その他、自治会活動全般に関するご意見</li>
-            </ul>
-
-            <p style="margin-top: 1.5rem;">
-                ご意見・ご要望は、下記メールアドレスまでお気軽にお寄せください。
-            </p>
-            <p style="margin-top: 1rem;">
-                <a href="mailto:kilala-jichi@gmail.com?subject=【ご意見・ご要望】" class="mail-link">
-                    kilala-jichi@gmail.com
-                </a>
-            </p>
-        </div>
-    </section>
-
-<!-- リンク集タブ（Googleシートから動的生成） -->
-    <section id="links" class="tab-content">
-        <div id="links-container">
-            <p>読み込み中...</p>
-        </div>
-    </section>
-
-</main>
-
-<footer>
-    <p>&copy; キララガーデン自治会</p>
-</footer>
-
-<script src="js/app.js"></script>
 </body>
 </html>
