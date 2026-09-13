@@ -6,7 +6,7 @@
   <title>キララガーデン自治会</title>
   <style>
     /* ==========================================
-       1. デフォルト（PC・共通）スタイル
+       1. 共通ベーススタイル（PC・スマホ共通）
        ========================================== */
     body {
       font-family: sans-serif;
@@ -16,17 +16,6 @@
       color: #333333;
     }
 
-    /* PC版の既存レイアウト・コンテナ */
-    .pc-layout-wrapper {
-      display: block;
-    }
-
-    /* スマホ専用コンテナ（PCでは非表示） */
-    .mobile-home-container {
-      display: none;
-    }
-
-    /* 共通ヘッダー（PC用） */
     .site-header {
       background: #2e6f40;
       color: #ffffff;
@@ -42,19 +31,158 @@
       font-size: 24px;
     }
 
-    .main-content {
-      max-width: 960px;
+    /* 全体レイアウトコンテナ（PC: 2カラム風 / スマホ: 1カラム） */
+    .wrapper {
+      max-width: 1000px;
       margin: 20px auto;
-      padding: 0 20px;
+      padding: 0 15px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 20px;
     }
 
-    .card-box {
+    /* メニューナビゲーション（共通） */
+    .menu-section {
+      background: #ffffff;
+      border: 1px solid #d1ded3;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      height: fit-content;
+    }
+    .section-heading {
+      font-size: 14px;
+      color: #2e6f40;
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-weight: bold;
+      border-left: 4px solid #2e6f40;
+      padding-left: 8px;
+    }
+    .card-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .nav-card {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid #d1ded3;
+      border-radius: 6px;
+      padding: 10px 14px;
+      text-decoration: none;
+      color: #2e6f40;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: left;
+    }
+    .nav-card:hover, .nav-card.active {
+      background: #2e6f40;
+      color: #ffffff;
+      border-color: #2e6f40;
+    }
+    .nav-card:hover .card-icon,
+    .nav-card:hover .card-label,
+    .nav-card.active .card-icon,
+    .nav-card.active .card-label {
+      color: #ffffff;
+    }
+    .card-icon {
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    .card-label {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* コンテンツ表示エリア */
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* 各コンテンツパネル */
+    .tab-panel {
+      display: none; /* デフォルトは非表示、JSで切り替え */
       background: #ffffff;
       border: 1px solid #d1ded3;
       border-radius: 8px;
       padding: 20px;
-      margin-bottom: 20px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border-left: 4px solid #d97736;
+    }
+    .tab-panel.active {
+      display: block; /* アクティブなパネルだけ表示 */
+    }
+    .tab-panel h2 {
+      margin-top: 0;
+      font-size: 18px;
+      color: #2e6f40;
+      border-bottom: 2px solid #edf2f7;
+      padding-bottom: 8px;
+    }
+
+    .content-meta {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    .date-tag {
+      background: #faebd7;
+      color: #8c5200;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .category-tag {
+      background: #2e6f40;
+      color: #ffffff;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .content-body {
+      font-size: 15px;
+      color: #333333;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* その他の情報・リンク集 */
+    .sub-links-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+    .simple-link-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .simple-link-list li {
+      border-bottom: 1px solid #f7fafc;
+    }
+    .simple-link-list li:last-child {
+      border-bottom: none;
+    }
+    .simple-link-list a {
+      display: block;
+      padding: 8px 4px;
+      color: #2e6f40;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .simple-link-list a:hover {
+      text-decoration: underline;
     }
 
     footer {
@@ -66,266 +194,170 @@
 
 
     /* ==========================================
-       2. スマートフォン向け最適化スタイル
-          （画面幅 768px 以下で自動適用）
+       2. スマートフォン向け最適化（768px以下）
        ========================================== */
     @media screen and (max-width: 768px) {
-      /* PC用レイアウトを確実に非表示にしてスマホ用に切り替え */
-      .pc-layout-wrapper {
-        display: none !important;
-      }
-      .mobile-home-container {
-        display: block !important;
-        background-color: #fdfbf7;
-        min-height: 100vh;
-        padding-bottom: 40px;
-      }
-
-      /* スマホ用ヘッダー（インフォメーション・タワー） */
-      .mobile-header-area {
-        background: linear-gradient(135deg, #2e6f40, #235531);
-        color: #ffffff;
-        text-align: center;
-        padding: 20px 15px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      }
-      .mobile-header-area .sub-title {
-        font-size: 12px;
-        opacity: 0.9;
-        margin-bottom: 4px;
-      }
-      .mobile-header-area .main-title {
-        font-size: 20px;
-        font-weight: bold;
-        margin: 0;
-        letter-spacing: 0.05em;
-      }
-
-      /* カード型ナビゲーションセクション */
-      .mobile-card-section {
-        padding: 20px 15px 10px 15px;
-      }
-      .section-heading {
-        font-size: 14px;
-        color: #2e6f40;
-        margin-bottom: 12px;
-        font-weight: bold;
-        border-left: 4px solid #2e6f40;
-        padding-left: 8px;
+      .wrapper {
+        grid-template-columns: 1fr; /* 1カラムに縦並び */
+        margin: 10px auto;
+        padding: 0 10px;
+        gap: 15px;
       }
       
-      /* カードグリッド（1列でスッキリ配置） */
-      .card-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+      /* スマホではメニュー（カード）を上部に配置 */
+      .menu-section {
+        order: 1;
       }
-      .nav-card {
-        display: flex;
-        align-items: center;
-        background: #ffffff;
-        border: 1px solid #d1ded3;
-        border-radius: 8px;
-        padding: 12px 16px;
-        text-decoration: none;
-        color: #2e6f40;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        transition: background 0.2s;
-      }
-      .nav-card:active {
-        background: #f0f7f2;
-      }
-      .card-icon {
-        font-size: 18px;
-        margin-right: 12px;
-      }
-      .card-label {
-        font-size: 15px;
-        font-weight: bold;
+      .content-area {
+        order: 2;
       }
 
-      /* メインコンテンツボックス（お知らせ等） */
-      .mobile-content-box {
-        margin: 15px;
-        background: #ffffff;
-        border-radius: 8px;
-        padding: 16px;
-        border-left: 4px solid #d97736;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      }
-      .content-meta {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 8px;
-        align-items: center;
-      }
-      .date-tag {
-        background: #faebd7;
-        color: #8c5200;
-        font-size: 11px;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-weight: bold;
-      }
-      .category-tag {
-        background: #2e6f40;
-        color: #ffffff;
-        font-size: 11px;
-        padding: 2px 8px;
-        border-radius: 4px;
-      }
-      .content-body {
-        font-size: 15px;
-        color: #333333;
-        margin: 0;
-      }
-
-      /* その他の情報・細かいリンク集（リスト形式） */
-      .mobile-sub-links {
-        margin: 25px 15px 15px 15px;
-        background: #ffffff;
-        border-radius: 8px;
-        padding: 16px;
-        border: 1px solid #e2e8f0;
-      }
-      .sub-heading {
-        font-size: 14px;
-        color: #4a5568;
-        margin-top: 0;
-        margin-bottom: 10px;
-        font-weight: bold;
-        border-bottom: 1px solid #edf2f7;
-        padding-bottom: 6px;
-      }
-      .simple-link-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-      .simple-link-list li {
-        border-bottom: 1px solid #f7fafc;
-      }
-      .simple-link-list li:last-child {
-        border-bottom: none;
-      }
-      .simple-link-list a {
-        display: block;
-        padding: 10px 4px;
-        color: #2e6f40;
-        text-decoration: none;
-        font-size: 14px;
-      }
-      .simple-link-list a:hover {
-        color: #1a3e24;
-        text-decoration: underline;
-      }
-
-      /* フッター */
-      .mobile-footer {
-        text-align: center;
-        font-size: 12px;
-        color: #718096;
-        margin-top: 30px;
-      }
+      /* PCではタブ式（JS切替）にするが、もしPCで全一覧を見せたい等の要件があればCSSで調整可能 */
     }
   </style>
 </head>
 <body>
 
-  <!-- ==========================================
-       PC向けレイアウト（従来通り完全維持）
-       ========================================== -->
-  <div class="pc-layout-wrapper">
-    <header class="site-header">
-      <div class="location">さいたま市中央区円阿弥</div>
-      <h1>キララガーデン自治会</h1>
-    </header>
+  <!-- 共通ヘッダー -->
+  <header class="site-header">
+    <div class="location">さいたま市中央区円阿弥</div>
+    <h1>キララガーデン自治会</h1>
+  </header>
+
+  <!-- メインレイアウト（単一HTML構造） -->
+  <div class="wrapper">
     
-    <div class="main-content">
-      <div class="card-box">
-        <h2>お知らせ</h2>
-        <p>2026/09/01: 特にありません</p>
-      </div>
-      <div class="card-box">
-        <h2>今月の掲示板・回覧</h2>
-        <p>今月の回覧板情報がここに表示されます。</p>
-      </div>
-    </div>
-
-    <footer>
-      <p>&copy; キララガーデン自治会</p>
-    </footer>
-  </div>
-
-
-  <!-- ==========================================
-       スマートフォン向けレイアウト（カード型＋下部リスト）
-       ========================================== -->
-  <div class="mobile-home-container">
-    
-    <!-- ヘルパー情報・エリア -->
-    <header class="mobile-header-area">
-      <div class="sub-title">さいたま市中央区円阿弥</div>
-      <h1 class="main-title">キララガーデン自治会</h1>
-    </header>
-
-    <!-- 1. 主要な入り口（カード型・1列配置） -->
-    <section class="mobile-card-section">
+    <!-- 左側 / スマホ上部：メニューナビゲーション -->
+    <nav class="menu-section">
       <h2 class="section-heading">メニュー</h2>
       <div class="card-grid">
-        <a href="#oshirase" class="nav-card">
+        <button type="button" class="nav-card active" onclick="switchTab('panel-oshirase', this)">
           <span class="card-icon">📢</span>
           <span class="card-label">お知らせ</span>
-        </a>
-        <a href="#keijiban" class="nav-card">
+        </button>
+        <button type="button" class="nav-card" onclick="switchTab('panel-keijiban', this)">
           <span class="card-icon">📋</span>
           <span class="card-label">今月の掲示板・回覧</span>
-        </a>
-        <a href="#gyoji" class="nav-card">
+        </button>
+        <button type="button" class="nav-card" onclick="switchTab('panel-gyoji', this)">
           <span class="card-icon">📅</span>
           <span class="card-label">行事予定</span>
-        </a>
-        <a href="#about" class="nav-card">
+        </button>
+        <button type="button" class="nav-card" onclick="switchTab('panel-about', this)">
           <span class="card-icon">🏠</span>
           <span class="card-label">自治会について</span>
-        </a>
-        <a href="#contact" class="nav-card">
+        </button>
+        <button type="button" class="nav-card" onclick="switchTab('panel-contact', this)">
           <span class="card-icon">💬</span>
           <span class="card-label">ご意見・ご要望</span>
-        </a>
-        <a href="#links" class="nav-card">
+        </button>
+        <button type="button" class="nav-card" onclick="switchTab('panel-links', this)">
           <span class="card-icon">🔗</span>
           <span class="card-label">リンク集</span>
-        </a>
+        </button>
       </div>
-    </section>
 
-    <!-- 2. 最新のお知らせプレビュー -->
-    <section class="mobile-content-box">
-      <div class="content-meta">
-        <span class="date-tag">2026/09/01</span>
-        <span class="category-tag">お知らせ</span>
+      <!-- その他のリンク集 -->
+      <div class="sub-links-box">
+        <h3 class="section-heading" style="margin-bottom: 8px;">関連リンク</h3>
+        <ul class="simple-link-list">
+          <li><a href="https://www.youtube.com/watch?v=5yOvgZURQSE" target="_blank" rel="noopener">与野鴻沼太鼓</a></li>
+          <li><a href="#kiyaku">自治会規約・細則</a></li>
+          <li><a href="#archive">過去の回覧板アーカイブ</a></li>
+          <li><a href="#bosai">防災・防犯の手引き</a></li>
+        </ul>
       </div>
-      <p class="content-body">特にありません</p>
-    </section>
+    </nav>
 
-    <!-- 3. その他の情報・細かいリンク集（リスト形式・与野鴻沼太鼓含む） -->
-    <section class="mobile-sub-links">
-      <h3 class="sub-heading">その他の情報・関連リンク</h3>
-      <ul class="simple-link-list">
-        <li><a href="https://www.youtube.com/watch?v=5yOvgZURQSE" target="_blank" rel="noopener">与野鴻沼太鼓</a></li>
-        <li><a href="#kiyaku">自治会規約・細則</a></li>
-        <li><a href="#archive">過去の回覧板アーカイブ</a></li>
-        <li><a href="#bosai">防災・防犯の手引き</a></li>
-      </ul>
-    </section>
+    <!-- 右側 / スマホ下部：切り替え式コンテンツパネル -->
+    <main class="content-area">
+      
+      <!-- お知らせ -->
+      <section id="panel-oshirase" class="tab-panel active">
+        <h2>お知らせ</h2>
+        <div class="content-meta">
+          <span class="date-tag">2026/09/01</span>
+          <span class="category-tag">お知らせ</span>
+        </div>
+        <p class="content-body">特にありません</p>
+      </section>
 
-    <!-- フッター -->
-    <footer class="mobile-footer">
-      <p>&copy; キララガーデン自治会</p>
-    </footer>
+      <!-- 今月の掲示板・回覧 -->
+      <section id="panel-keijiban" class="tab-panel">
+        <h2>今月の掲示板・回覧</h2>
+        <div class="content-meta">
+          <span class="date-tag">2026/09/01</span>
+          <span class="category-tag">掲示板</span>
+        </div>
+        <p class="content-body">今月の回覧板事項および掲示板のお知らせがここに表示されます。</p>
+      </section>
+
+      <!-- 行事予定 -->
+      <section id="panel-gyoji" class="tab-panel">
+        <h2>行事予定</h2>
+        <div class="content-meta">
+          <span class="category-tag">行事予定</span>
+        </div>
+        <p class="content-body">今年度の自治会行事やイベントのスケジュール予定がここに表示されます。</p>
+      </section>
+
+      <!-- 自治会について -->
+      <section id="panel-about" class="tab-panel">
+        <h2>自治会について</h2>
+        <div class="content-meta">
+          <span class="category-tag">概要</span>
+        </div>
+        <p class="content-body">キララガーデン自治会の規約、組織図、活動方針についてご紹介します。</p>
+      </section>
+
+      <!-- ご意見・ご要望 -->
+      <section id="panel-contact" class="tab-panel">
+        <h2>ご意見・ご要望</h2>
+        <div class="content-meta">
+          <span class="category-tag">窓口</span>
+        </div>
+        <p class="content-body">自治会活動に対するご意見・ご要望・お問い合わせはこちらから受け付けています。</p>
+      </section>
+
+      <!-- リンク集 -->
+      <section id="panel-links" class="tab-panel">
+        <h2>リンク集</h2>
+        <div class="content-meta">
+          <span class="category-tag">リンク</span>
+        </div>
+        <p class="content-body">行政窓口や関連組織へのリンク一覧です。</p>
+      </section>
+
+    </main>
 
   </div>
+
+  <footer>
+    <p>&copy; キララガーデン自治会</p>
+  </footer>
+
+  <!-- タブ切り替え用スクリプト -->
+  <script>
+    function switchTab(panelId, cardElement) {
+      // すべてのパネルを非表示
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+      // すべてのボタンのアクティブを解除
+      document.querySelectorAll('.nav-card').forEach(card => {
+        card.classList.remove('active');
+      });
+
+      // 該当パネルとボタンをアクティブに
+      const targetPanel = document.getElementById(panelId);
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+      }
+      if (cardElement) {
+        cardElement.classList.add('active');
+      }
+    }
+  </script>
 
 </body>
 </html>
