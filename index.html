@@ -17,11 +17,11 @@
            （画面幅 768px 以下で自動適用）
            ========================================== */
         .mobile-tower-wrapper {
-            display: none; /* デフォルト（PC）では非表示 */
+            display: none; /* PC版では非表示 */
         }
 
         @media screen and (max-width: 768px) {
-            /* 1. PC用のヘッダー内タブナビゲーションを非表示にする */
+            /* 1. PC用のタブナビゲーションを非表示にする */
             header .tab-nav {
                 display: none !important;
             }
@@ -29,36 +29,30 @@
             /* 2. スマホ専用のインフォメーション・タワー構造を表示 */
             .mobile-tower-wrapper {
                 display: block !important;
-                background-color: #fdfbf7;
+                background-color: var(--bg-color);
                 margin: 0;
                 padding: 0 0 40px 0;
                 font-family: 'BIZ UDGothic', sans-serif;
             }
 
-            /* 画像のような緑色グラデーションのヘッダーブロック */
+            /* スマホ用ヘッダーカード（PC版の --primary-color と完全に連動） */
             .tower-header-card {
-                background: linear-gradient(135deg, #2e6f40, #1e4a2a);
-                color: #ffffff;
+                background: var(--primary-color);
+                color: white;
                 text-align: center;
-                padding: 25px 15px 20px 15px;
+                padding: 20px 15px;
                 border-radius: 0 0 16px 16px;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.1);
                 margin-bottom: 20px;
             }
             .tower-sub-line {
-                font-size: 12px;
+                font-size: 0.95rem;
                 opacity: 0.9;
-                margin-bottom: 4px;
+                margin-bottom: 0.2rem;
             }
             .tower-main-line {
-                font-size: 20px;
-                font-weight: bold;
-                margin: 0 0 4px 0;
-                letter-spacing: 0.05em;
-            }
-            .tower-desc {
-                font-size: 11px;
-                opacity: 0.85;
+                font-size: 1.5rem;
+                font-weight: 700;
                 margin: 0;
             }
 
@@ -72,18 +66,17 @@
                 margin: 0 auto 20px auto;
             }
             .tower-btn {
-                background: #ffffff;
+                background: var(--card-bg);
                 border: 1px solid #d1ded3;
                 border-radius: 8px;
                 padding: 12px 10px;
                 text-align: center;
                 text-decoration: none;
-                color: #2e6f40;
-                font-size: 13px;
-                font-weight: bold;
+                color: var(--primary-color);
+                font-size: 0.95rem;
+                font-weight: 700;
                 box-shadow: 0 2px 4px rgba(0,0,0,0.04);
                 cursor: pointer;
-                transition: all 0.2s ease;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -91,38 +84,35 @@
                 font-family: inherit;
                 box-sizing: border-box;
             }
-            /* スマホボタンのアクティブ（選択中）状態 */
+            /* 選択中（active）のボタン色（PC版の --primary-color と完全に連動） */
             .tower-btn.active {
-                background: #2e6f40;
-                color: #ffffff;
-                border-color: #2e6f40;
-                box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+                background: var(--primary-color);
+                color: white;
+                border-color: var(--primary-color);
             }
 
-            /* 3. スマホでのコンテンツ表示エリア（選んだタブのセクションだけを表示） */
+            /* 3. スマホでのコンテンツ表示エリア */
             .mobile-content-area {
                 padding: 0 15px;
                 max-width: 600px;
                 margin: 0 auto;
             }
-            /* 元のセクションをスマホ用にスタイリング（初期は非表示、activeで表示） */
             main .tab-content {
                 display: none !important;
-                background: #ffffff;
+                background: var(--card-bg);
                 border-radius: 10px;
                 padding: 20px 16px;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.06);
                 border: 1px solid #d1ded3;
-                border-top: 4px solid #2e6f40;
+                border-top: 4px solid var(--primary-color);
                 box-sizing: border-box;
             }
             main .tab-content.active {
                 display: block !important;
             }
 
-            /* スマホ表示時のページ全体背景 */
             body {
-                background-color: #fdfbf7;
+                background-color: var(--bg-color);
                 margin: 0;
                 padding: 0;
             }
@@ -131,14 +121,14 @@
                 background: none;
             }
             header .header-title {
-                display: none; /* PC用ヘッダータイトルはスマホでは専用カードに置き換えるため非表示 */
+                display: none;
             }
         }
     </style>
 </head>
 <body>
 
-<!-- PC用ヘッダー（画面幅768px超で表示。元の構造を完全保持） -->
+<!-- PC用ヘッダー（元の構造を完全保持） -->
 <header>
     <h1 class="header-title">
         <span class="sub-line">さいたま市中央区円阿弥</span>
@@ -154,18 +144,13 @@
     </nav>
 </header>
 
-<!-- ==========================================
-     スマホ専用：インフォメーション・タワー版UI
-     ========================================== -->
+<!-- スマホ専用インフォメーション・タワー版UI -->
 <div class="mobile-tower-wrapper">
-    <!-- 緑色のヘッダーカード -->
     <div class="tower-header-card">
         <div class="tower-sub-line">さいたま市中央区円阿弥</div>
         <h1 class="tower-main-line">キララガーデン自治会</h1>
-        <p class="tower-desc">公式スマートフォンサイト</p>
     </div>
 
-    <!-- 2列のカード型メニューボタン -->
     <nav class="tower-nav-grid">
         <button type="button" class="tower-btn active" data-tab="notice">
             <span>📢</span><span>お知らせ</span>
@@ -188,17 +173,17 @@
     </nav>
 </div>
 
-<!-- メインコンテンツ（PC・スマホ共通のセクション構造） -->
+<!-- メインコンテンツ -->
 <main>
     <div class="mobile-content-area">
-        <!-- お知らせタブ（Googleシートから動的生成） -->
+        <!-- お知らせタブ -->
         <section id="notice" class="tab-content active">
             <div id="notice-container">
                 <p id="loading">読み込み中...</p>
             </div>
         </section>
 
-        <!-- 今月の掲示板・回覧タブ（固定コンテンツ） -->
+        <!-- 今月の掲示板・回覧タブ -->
         <section id="board" class="tab-content">
             <div class="board-highlight">
                 <p style="margin-bottom: 1rem;">さいたま市中央区が発行する、今月の掲示ポスター・回覧文書はこちらから確認できます。</p>
@@ -216,14 +201,14 @@
             </p>
         </section>
 
-        <!-- 行事予定タブ（Googleシートから動的生成） -->
+        <!-- 行事予定タブ -->
         <section id="event" class="tab-content">
             <div id="event-container">
                 <p>読み込み中...</p>
             </div>
         </section>
 
-        <!-- 自治会についてタブ（固定コンテンツ） -->
+        <!-- 自治会についてタブ -->
         <section id="about" class="tab-content">
             <div class="info-card">
                 <dl>
@@ -242,7 +227,7 @@
             </div>
         </section>
 
-        <!-- ご意見・ご要望タブ（固定コンテンツ） -->
+        <!-- ご意見・ご要望タブ -->
         <section id="contact" class="tab-content">
             <div class="notice-warning">
                 <p><strong>⚠️ ご注意ください</strong></p>
@@ -279,7 +264,7 @@
             </div>
         </section>
 
-        <!-- リンクタブ（Googleシートから動的生成） -->
+        <!-- リンクタブ -->
         <section id="links" class="tab-content">
             <div id="links-container">
                 <p>読み込み中...</p>
@@ -294,7 +279,6 @@
 
 <script src="js/app.js"></script>
 
-<!-- スマホ用インフォメーション・タワーのボタンと既存JS（app.js）を連動させるスクリプト -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const towerBtns = document.querySelectorAll('.tower-btn');
@@ -303,19 +287,15 @@
             btn.addEventListener('click', function() {
                 const targetTab = this.getAttribute('data-tab');
                 
-                // 1. すべてのスマホ用タワーボタンのactiveを外す
                 towerBtns.forEach(b => b.classList.remove('active'));
-                // クリックされたボタンにactiveを付与
                 this.classList.add('active');
 
-                // 2. PC用タブボタン（.tab-button）も同期させる（app.jsの制御基盤との互換性のため）
                 const correspondingTabBtn = document.querySelector(`.tab-button[data-tab="${targetTab}"]`);
                 if (correspondingTabBtn) {
                     document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
                     correspondingTabBtn.classList.add('active');
                 }
 
-                // 3. すべてのタブコンテンツを非表示にし、対象のセクションだけを表示する
                 document.querySelectorAll('.tab-content').forEach(content => {
                     content.classList.remove('active');
                 });
