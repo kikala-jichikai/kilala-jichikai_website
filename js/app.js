@@ -85,7 +85,8 @@ async function loadLinks() {
         }
 
         const csvText = await response.text();
-        const items = parseLinkCSV(csvText);
+        const rows = parseCSVToRows(csvText);
+        const items = parseLinkRows(rows);
 
         renderLinks(items, container);
 
@@ -112,7 +113,8 @@ async function loadAndRenderNotices(url, container, defaultCategory) {
         }
 
         const csvText = await response.text();
-        const items = parseCSV(csvText);
+        const rows = parseCSVToRows(csvText);
+        const items = parseNoticeRows(rows);
 
         renderItems(items, container, defaultCategory);
 
@@ -128,73 +130,108 @@ async function loadAndRenderNotices(url, container, defaultCategory) {
 }
 
 // ==========================================
-// CSVパース処理（お知らせ・行事予定用）
+// 本格的なCSVパーサ（セル内改行・ダブルクォーテーション完全対応）
 // ==========================================
-function parseCSV(csvText) {
-    const lines = csvText.trim().split('\n');
+function parseCSVToRows(text) {
+    const rows = [];
+    let currentRow = [];
+    let currentField = '';
+    let inQuotes = false;
 
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if (inQuotes) {
+            if (char === '"') {
+                if (nextChar === '"') {
+                    // エスケープされたダブルクォーテーション ("")
+                    currentField += '"';
+                    i++;
+                } else {
+                    // クォーテーション終了
+                    inQuotes = false;
+                }
+            } else {
+                currentField += char;
+            }
+        } else {
+            if (char === '"') {
+                inQuotes = true;
+            } else if (char === ',') {
+                currentRow.push(currentField);
+                currentField = '';
+            } else if (char === '\r') {
+                // 改行コードの処理 (CRLF または CR)
+                if (nextChar === '\n') {
+                    i++;
+                }
+                currentRow.push(currentField);
+                rows.push(currentRow);
+                currentRow = [];
+                currentField = '';
+            } else if (char === '\n') {
+                // 改行コード (LF)
+                currentRow.push(currentField);
+                rows.push(currentRow);
+                currentRow = [];
+                currentField = '';
+            } else {
+                currentField += char;
+            }
+        }
+    }
+    // 最後の行の処理
+    if (currentField !== '' || currentRow.length > 0) {
+        currentRow.push(currentField);
+        rows.push(currentRow);
+    }
+
+    return rows;
+}
+
+// ==========================================
+// 行データ変換（お知らせ・行事予定用）
+// ==========================================
+function parseNoticeRows(rows) {
     const items = [];
-    for (let i = 1; i < lines.length; i++) {
-        const values = parseCSVLine(lines[i]);
-        if (values[0]) {
+    // 1行目はヘッダーなので i = 1 から開始
+    for (let i = 1; i < rows.length; i++) {
+        const values = rows[i];
+        if (values && values[0] && values[0].trim() !== '') {
             items.push({
-                date: values[0],
-                category: values[1] || '',
-                title: values[2] || '',
-                body: values[3] || '',
-                imageUrl: values[4] || '',
-                pdfUrl: values[5] || '',
-                endDate: values[6] || ''
+                date: values[0].trim(),
+                category: (values[1] || '').trim(),
+                title: (values[2] || '').trim(),
+                body: (values[3] || '').trim(),
+                imageUrl: (values[4] || '').trim(),
+                pdfUrl: (values[5] || '').trim(),
+                endDate: (values[6] || '').trim()
             });
         }
     }
 
     items.sort((a, b) => new Date(b.date) - new Date(a.date));
-
     return items;
 }
 
 // ==========================================
-// CSVパース処理（リンク集用）
+// 行データ変換（リンク集用）
 // A列:カテゴリ B列:リンク名 C列:URL
 // ==========================================
-function parseLinkCSV(csvText) {
-    const lines = csvText.trim().split('\n');
-
+function parseLinkRows(rows) {
     const items = [];
-    for (let i = 1; i < lines.length; i++) {
-        const values = parseCSVLine(lines[i]);
-        if (values[0] && values[1] && values[2]) {
+    for (let i = 1; i < rows.length; i++) {
+        const values = rows[i];
+        if (values && values[0] && values[0].trim() !== '' && values[1] && values[2]) {
             items.push({
-                category: values[0],
-                name: values[1],
-                url: values[2]
+                category: values[0].trim(),
+                name: values[1].trim(),
+                url: values[2].trim()
             });
         }
     }
-
     return items;
-}
-
-function parseCSVLine(line) {
-    const result = [];
-    let current = '';
-    let inQuotes = false;
-
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        if (char === '"') {
-            inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
-            result.push(current.trim());
-            current = '';
-        } else {
-            current += char;
-        }
-    }
-    result.push(current.trim());
-
-    return result.map(v => v.replace(/^"|"$/g, ''));
 }
 
 // ==========================================
@@ -261,6 +298,9 @@ function renderItems(items, container, defaultCategory) {
             ? `<img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.title)}" class="notice-image">`
             : '';
 
+        // セル内改行（\n）をHTMLの改行（<br>）に変換して綺麗に出力する
+        const formattedBody = escapeHtml(item.body).replace(/\n/g, '<br>');
+
         return `
             <article class="notice-card">
                 <time class="notice-date">${escapeHtml(item.date)}</time>
@@ -268,7 +308,7 @@ function renderItems(items, container, defaultCategory) {
                 ${newBadge}
                 ${endBadge}
                 <h2 class="notice-title">${escapeHtml(item.title)}</h2>
-                <p class="notice-body">${escapeHtml(item.body)}</p>
+                <p class="notice-body">${formattedBody}</p>
                 ${image}
                 ${pdfLink}
             </article>
@@ -287,7 +327,6 @@ function renderLinks(items, container) {
         return;
     }
 
-    // カテゴリごとにグループ化
     const grouped = {};
     items.forEach(item => {
         if (!grouped[item.category]) {
