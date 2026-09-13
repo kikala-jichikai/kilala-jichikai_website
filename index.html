@@ -1,363 +1,239 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>キララガーデン自治会</title>
-  <style>
-    /* ==========================================
-       1. 共通ベーススタイル（PC・スマホ共通）
-       ========================================== */
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #fdfbf7;
-      color: #333333;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>キララガーデン自治会</title>
 
-    .site-header {
-      background: #2e6f40;
-      color: #ffffff;
-      padding: 20px;
-      text-align: center;
-    }
-    .site-header .location {
-      font-size: 13px;
-      opacity: 0.9;
-    }
-    .site-header h1 {
-      margin: 5px 0 0 0;
-      font-size: 24px;
-    }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&display=swap" rel="stylesheet">
 
-    /* 全体レイアウトコンテナ（PC: 2カラム風 / スマホ: 1カラム） */
-    .wrapper {
-      max-width: 1000px;
-      margin: 20px auto;
-      padding: 0 15px;
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 20px;
-    }
+    <link rel="stylesheet" href="css/style.css">
 
-    /* メニューナビゲーション（共通） */
-    .menu-section {
-      background: #ffffff;
-      border: 1px solid #d1ded3;
-      border-radius: 8px;
-      padding: 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      height: fit-content;
-    }
-    .section-heading {
-      font-size: 14px;
-      color: #2e6f40;
-      margin-top: 0;
-      margin-bottom: 12px;
-      font-weight: bold;
-      border-left: 4px solid #2e6f40;
-      padding-left: 8px;
-    }
-    .card-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .nav-card {
-      display: flex;
-      align-items: center;
-      background: #ffffff;
-      border: 1px solid #d1ded3;
-      border-radius: 6px;
-      padding: 10px 14px;
-      text-decoration: none;
-      color: #2e6f40;
-      cursor: pointer;
-      transition: all 0.2s;
-      width: 100%;
-      box-sizing: border-box;
-      text-align: left;
-    }
-    .nav-card:hover, .nav-card.active {
-      background: #2e6f40;
-      color: #ffffff;
-      border-color: #2e6f40;
-    }
-    .nav-card:hover .card-icon,
-    .nav-card:hover .card-label,
-    .nav-card.active .card-icon,
-    .nav-card.active .card-label {
-      color: #ffffff;
-    }
-    .card-icon {
-      font-size: 16px;
-      margin-right: 10px;
-    }
-    .card-label {
-      font-size: 14px;
-      font-weight: bold;
-    }
+    <style>
+        /* ==========================================
+           スマホ専用：インフォメーション・タワー化
+           （画面幅 768px 以下で自動適用）
+           PC版のHTML構造・クラス・IDは一切変更せず、
+           CSSとメディアクエリだけでスマホ表示を制御します。
+           ========================================== */
+        @media screen and (max-width: 768px) {
+            /* 1. PC用のタブナビゲーションをスマホでは非表示にする */
+            .tab-nav {
+                display: none !important;
+            }
 
-    /* コンテンツ表示エリア */
-    .content-area {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+            /* 2. すべてのセクション（tab-content）を常に表示させ、縦に積み上げる（インフォメーション・タワー） */
+            main .tab-content {
+                display: block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                margin-bottom: 30px;
+                background: #ffffff;
+                border-radius: 8px;
+                padding: 16px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                border: 1px solid #d1ded3;
+            }
 
-    /* 各コンテンツパネル */
-    .tab-panel {
-      display: none; /* デフォルトは非表示、JSで切り替え */
-      background: #ffffff;
-      border: 1px solid #d1ded3;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      border-left: 4px solid #d97736;
-    }
-    .tab-panel.active {
-      display: block; /* アクティブなパネルだけ表示 */
-    }
-    .tab-panel h2 {
-      margin-top: 0;
-      font-size: 18px;
-      color: #2e6f40;
-      border-bottom: 2px solid #edf2f7;
-      padding-bottom: 8px;
-    }
+            /* 3. スマホ向けに見出し（タワーの階層タイトル）を自動付与して視認性を向上 */
+            #notice::before {
+                content: "📢 お知らせ";
+                display: block;
+                font-size: 16px;
+                font-weight: bold;
+                color: #2e6f40;
+                border-bottom: 2px solid #2e6f40;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
+            }
+            #board::before {
+                content: "📋 今月の掲示板・回覧";
+                display: block;
+                font-size: 16px;
+                font-weight: bold;
+                color: #2e6f40;
+                border-bottom: 2px solid #2e6f40;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
+            }
+            #event::before {
+                content: "📅 行事予定";
+                display: block;
+                font-size: 16px;
+                font-weight: bold;
+                color: #2e6f40;
+                border-bottom: 2px solid #2e6f40;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
+            }
+            #about::before {
+                content: "🏠 自治会について";
+                display: block;
+                font-size: 16px;
+                font-weight: bold;
+                color: #2e6f40;
+                border-bottom: 2px solid #2e6f40;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
+            }
+            #contact::before {
+                content: "💬 ご意見・ご要望";
+                display: block;
+                font-size: 16px;
+                font-weight: bold;
+                color: #2e6f40;
+                border-bottom: 2px solid #2e6f40;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
+            }
+            #links::before {
+                content: "🔗 リンク";
+                display: block;
+                font-size: 16px;
+                font-weight: bold;
+                color: #2e6f40;
+                border-bottom: 2px solid #2e6f40;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
+            }
 
-    .content-meta {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 10px;
-      align-items: center;
-    }
-    .date-tag {
-      background: #faebd7;
-      color: #8c5200;
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-weight: bold;
-    }
-    .category-tag {
-      background: #2e6f40;
-      color: #ffffff;
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 4px;
-    }
-    .content-body {
-      font-size: 15px;
-      color: #333333;
-      line-height: 1.6;
-      margin: 0;
-    }
-
-    /* その他の情報・リンク集 */
-    .sub-links-box {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 15px;
-      margin-top: 15px;
-    }
-    .simple-link-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .simple-link-list li {
-      border-bottom: 1px solid #f7fafc;
-    }
-    .simple-link-list li:last-child {
-      border-bottom: none;
-    }
-    .simple-link-list a {
-      display: block;
-      padding: 8px 4px;
-      color: #2e6f40;
-      text-decoration: none;
-      font-size: 14px;
-    }
-    .simple-link-list a:hover {
-      text-decoration: underline;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: #718096;
-      font-size: 13px;
-    }
-
-
-    /* ==========================================
-       2. スマートフォン向け最適化（768px以下）
-       ========================================== */
-    @media screen and (max-width: 768px) {
-      .wrapper {
-        grid-template-columns: 1fr; /* 1カラムに縦並び */
-        margin: 10px auto;
-        padding: 0 10px;
-        gap: 15px;
-      }
-      
-      /* スマホではメニュー（カード）を上部に配置 */
-      .menu-section {
-        order: 1;
-      }
-      .content-area {
-        order: 2;
-      }
-
-      /* PCではタブ式（JS切替）にするが、もしPCで全一覧を見せたい等の要件があればCSSで調整可能 */
-    }
-  </style>
+            /* 全体余白の調整 */
+            body {
+                background-color: #fdfbf7;
+                margin: 0;
+                padding: 0;
+            }
+            header {
+                padding: 15px;
+            }
+            main {
+                padding: 0 12px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- 共通ヘッダー -->
-  <header class="site-header">
-    <div class="location">さいたま市中央区円阿弥</div>
-    <h1>キララガーデン自治会</h1>
-  </header>
-
-  <!-- メインレイアウト（単一HTML構造） -->
-  <div class="wrapper">
-    
-    <!-- 左側 / スマホ上部：メニューナビゲーション -->
-    <nav class="menu-section">
-      <h2 class="section-heading">メニュー</h2>
-      <div class="card-grid">
-        <button type="button" class="nav-card active" onclick="switchTab('panel-oshirase', this)">
-          <span class="card-icon">📢</span>
-          <span class="card-label">お知らせ</span>
-        </button>
-        <button type="button" class="nav-card" onclick="switchTab('panel-keijiban', this)">
-          <span class="card-icon">📋</span>
-          <span class="card-label">今月の掲示板・回覧</span>
-        </button>
-        <button type="button" class="nav-card" onclick="switchTab('panel-gyoji', this)">
-          <span class="card-icon">📅</span>
-          <span class="card-label">行事予定</span>
-        </button>
-        <button type="button" class="nav-card" onclick="switchTab('panel-about', this)">
-          <span class="card-icon">🏠</span>
-          <span class="card-label">自治会について</span>
-        </button>
-        <button type="button" class="nav-card" onclick="switchTab('panel-contact', this)">
-          <span class="card-icon">💬</span>
-          <span class="card-label">ご意見・ご要望</span>
-        </button>
-        <button type="button" class="nav-card" onclick="switchTab('panel-links', this)">
-          <span class="card-icon">🔗</span>
-          <span class="card-label">リンク集</span>
-        </button>
-      </div>
-
-      <!-- その他のリンク集 -->
-      <div class="sub-links-box">
-        <h3 class="section-heading" style="margin-bottom: 8px;">関連リンク</h3>
-        <ul class="simple-link-list">
-          <li><a href="https://www.youtube.com/watch?v=5yOvgZURQSE" target="_blank" rel="noopener">与野鴻沼太鼓</a></li>
-          <li><a href="#kiyaku">自治会規約・細則</a></li>
-          <li><a href="#archive">過去の回覧板アーカイブ</a></li>
-          <li><a href="#bosai">防災・防犯の手引き</a></li>
-        </ul>
-      </div>
+<header>
+    <h1 class="header-title">
+        <span class="sub-line">さいたま市中央区円阿弥</span>
+        <span class="main-line">キララガーデン自治会</span>
+    </h1>
+    <nav class="tab-nav">
+        <button class="tab-button active" data-tab="notice">お知らせ</button>
+        <button class="tab-button" data-tab="board">今月の掲示板・回覧</button>
+        <button class="tab-button" data-tab="event">行事予定</button>
+        <button class="tab-button" data-tab="about">自治会について</button>
+        <button class="tab-button" data-tab="contact">ご意見・ご要望</button>
+        <button class="tab-button" data-tab="links">リンク</button>
     </nav>
+</header>
 
-    <!-- 右側 / スマホ下部：切り替え式コンテンツパネル -->
-    <main class="content-area">
-      
-      <!-- お知らせ -->
-      <section id="panel-oshirase" class="tab-panel active">
-        <h2>お知らせ</h2>
-        <div class="content-meta">
-          <span class="date-tag">2026/09/01</span>
-          <span class="category-tag">お知らせ</span>
+<main>
+
+    <!-- お知らせタブ（Googleシートから動的生成） -->
+    <section id="notice" class="tab-content active">
+        <div id="notice-container">
+            <p id="loading">読み込み中...</p>
         </div>
-        <p class="content-body">特にありません</p>
-      </section>
+    </section>
 
-      <!-- 今月の掲示板・回覧 -->
-      <section id="panel-keijiban" class="tab-panel">
-        <h2>今月の掲示板・回覧</h2>
-        <div class="content-meta">
-          <span class="date-tag">2026/09/01</span>
-          <span class="category-tag">掲示板</span>
+    <!-- 今月の掲示板・回覧タブ（固定コンテンツ） -->
+    <section id="board" class="tab-content">
+        <div class="board-highlight">
+            <p style="margin-bottom: 1rem;">さいたま市中央区が発行する、今月の掲示ポスター・回覧文書はこちらから確認できます。</p>
+            <ul class="link-list" style="margin-bottom: 0;">
+                <li>
+                    <a href="https://www.city.saitama.lg.jp/001/013/007/p074093.html" target="_blank" rel="noopener noreferrer">
+                        <span>📌 今月の掲示ポスター・回覧文書（さいたま市）</span>
+                        <span class="external-icon">↗ 外部サイト</span>
+                    </a>
+                </li>
+            </ul>
         </div>
-        <p class="content-body">今月の回覧板事項および掲示板のお知らせがここに表示されます。</p>
-      </section>
+        <p style="color: #888; font-size: 0.9rem;">
+            ※上記は「さいたま市」全体の掲示物ページです。中央区独自の情報も含まれます。
+        </p>
+    </section>
 
-      <!-- 行事予定 -->
-      <section id="panel-gyoji" class="tab-panel">
-        <h2>行事予定</h2>
-        <div class="content-meta">
-          <span class="category-tag">行事予定</span>
+    <!-- 行事予定タブ（Googleシートから動的生成） -->
+    <section id="event" class="tab-content">
+        <div id="event-container">
+            <p>読み込み中...</p>
         </div>
-        <p class="content-body">今年度の自治会行事やイベントのスケジュール予定がここに表示されます。</p>
-      </section>
+    </section>
 
-      <!-- 自治会について -->
-      <section id="panel-about" class="tab-panel">
-        <h2>自治会について</h2>
-        <div class="content-meta">
-          <span class="category-tag">概要</span>
+    <!-- 自治会についてタブ（固定コンテンツ） -->
+    <section id="about" class="tab-content">
+        <div class="info-card">
+            <dl>
+                <dt>自治会名</dt>
+                <dd>キララガーデン自治会</dd>
+
+                <dt>設立</dt>
+                <dd>2007年9月</dd>
+
+                <dt>自治会所在地</dt>
+                <dd>〒338-0007 さいたま市中央区円阿弥5-8-50</dd>
+
+                <dt>お問い合わせ</dt>
+                <dd><a href="mailto:kilala-jichi@gmail.com?subject=【お問い合わせ】" class="mail-link">kilala-jichi@gmail.com</a></dd>
+            </dl>
         </div>
-        <p class="content-body">キララガーデン自治会の規約、組織図、活動方針についてご紹介します。</p>
-      </section>
+    </section>
 
-      <!-- ご意見・ご要望 -->
-      <section id="panel-contact" class="tab-panel">
-        <h2>ご意見・ご要望</h2>
-        <div class="content-meta">
-          <span class="category-tag">窓口</span>
+    <!-- ご意見・ご要望タブ（固定コンテンツ） -->
+    <section id="contact" class="tab-content">
+        <div class="notice-warning">
+            <p><strong>⚠️ ご注意ください</strong></p>
+            <p>
+                こちらは<strong>自治会</strong>へのご意見・ご要望の窓口です。<br>
+                マンションの管理・修繕・共用部分等に関する<strong>管理組合（理事会）</strong>へのお問い合わせはご遠慮ください。<br>
+            </p>
+            <p></p>
+            <p>
+                ※管理組合に関するお問い合わせは、別途管理組合の窓口（管理人室）までご連絡をお願いいたします。
+            </p>
         </div>
-        <p class="content-body">自治会活動に対するご意見・ご要望・お問い合わせはこちらから受け付けています。</p>
-      </section>
 
-      <!-- リンク集 -->
-      <section id="panel-links" class="tab-panel">
-        <h2>リンク集</h2>
-        <div class="content-meta">
-          <span class="category-tag">リンク</span>
+        <div class="info-card">
+            <p style="margin-bottom: 1rem;">
+                自治会では、以下のような地域コミュニティ活動に関するご意見・ご要望を受け付けております。
+            </p>
+            <ul class="topic-list">
+                <li>🏘️ 地域コミュニティ活動について</li>
+                <li>🛡️ 防犯・防災に関するご相談</li>
+                <li>🎉 地域行事・イベントへの参加について</li>
+                <li>📋 回覧板・掲示物に関するお問い合わせ</li>
+                <li>💬 その他、自治会活動全般に関するご意見</li>
+            </ul>
+
+            <p style="margin-top: 1.5rem;">
+                ご意見・ご要望は、下記メールアドレスまでお気軽にお寄せください。
+            </p>
+            <p style="margin-top: 1rem;">
+                <a href="mailto:kilala-jichi@gmail.com?subject=【ご意見・ご要望】" class="mail-link">
+                    kilala-jichi@gmail.com
+                </a>
+            </p>
         </div>
-        <p class="content-body">行政窓口や関連組織へのリンク一覧です。</p>
-      </section>
+    </section>
 
-    </main>
+    <!-- リンクタブ（Googleシートから動的生成） -->
+    <section id="links" class="tab-content">
+        <div id="links-container">
+            <p>読み込み中...</p>
+        </div>
+    </section>
 
-  </div>
+</main>
 
-  <footer>
+<footer>
     <p>&copy; キララガーデン自治会</p>
-  </footer>
+</footer>
 
-  <!-- タブ切り替え用スクリプト -->
-  <script>
-    function switchTab(panelId, cardElement) {
-      // すべてのパネルを非表示
-      document.querySelectorAll('.tab-panel').forEach(panel => {
-        panel.classList.remove('active');
-      });
-      // すべてのボタンのアクティブを解除
-      document.querySelectorAll('.nav-card').forEach(card => {
-        card.classList.remove('active');
-      });
-
-      // 該当パネルとボタンをアクティブに
-      const targetPanel = document.getElementById(panelId);
-      if (targetPanel) {
-        targetPanel.classList.add('active');
-      }
-      if (cardElement) {
-        cardElement.classList.add('active');
-      }
-    }
-  </script>
-
+<script src="js/app.js"></script>
 </body>
 </html>
