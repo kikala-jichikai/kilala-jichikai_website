@@ -13,109 +13,132 @@
 
     <style>
         /* ==========================================
-           スマホ専用：インフォメーション・タワー化
+           スマホ専用：インフォメーション・タワー版デザイン
            （画面幅 768px 以下で自動適用）
-           PC版のHTML構造・クラス・IDは一切変更せず、
-           CSSとメディアクエリだけでスマホ表示を制御します。
            ========================================== */
+        .mobile-tower-wrapper {
+            display: none; /* デフォルト（PC）では非表示 */
+        }
+
         @media screen and (max-width: 768px) {
-            /* 1. PC用のタブナビゲーションをスマホでは非表示にする */
-            .tab-nav {
+            /* 1. PC用のヘッダー内タブナビゲーションを非表示にする */
+            header .tab-nav {
                 display: none !important;
             }
 
-            /* 2. すべてのセクション（tab-content）を常に表示させ、縦に積み上げる（インフォメーション・タワー） */
-            main .tab-content {
+            /* 2. スマホ専用のインフォメーション・タワー構造を表示 */
+            .mobile-tower-wrapper {
                 display: block !important;
-                opacity: 1 !important;
-                visibility: visible !important;
-                margin-bottom: 30px;
+                background-color: #fdfbf7;
+                margin: 0;
+                padding: 0 0 40px 0;
+                font-family: 'BIZ UDGothic', sans-serif;
+            }
+
+            /* 画像のような緑色グラデーションのヘッダーブロック */
+            .tower-header-card {
+                background: linear-gradient(135deg, #2e6f40, #1e4a2a);
+                color: #ffffff;
+                text-align: center;
+                padding: 25px 15px 20px 15px;
+                border-radius: 0 0 16px 16px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+            }
+            .tower-sub-line {
+                font-size: 12px;
+                opacity: 0.9;
+                margin-bottom: 4px;
+            }
+            .tower-main-line {
+                font-size: 20px;
+                font-weight: bold;
+                margin: 0 0 4px 0;
+                letter-spacing: 0.05em;
+            }
+            .tower-desc {
+                font-size: 11px;
+                opacity: 0.85;
+                margin: 0;
+            }
+
+            /* 2列のカード型ボタン・グリッドレイアウト */
+            .tower-nav-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                padding: 0 15px;
+                max-width: 600px;
+                margin: 0 auto 20px auto;
+            }
+            .tower-btn {
                 background: #ffffff;
-                border-radius: 8px;
-                padding: 16px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
                 border: 1px solid #d1ded3;
+                border-radius: 8px;
+                padding: 12px 10px;
+                text-align: center;
+                text-decoration: none;
+                color: #2e6f40;
+                font-size: 13px;
+                font-weight: bold;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                font-family: inherit;
+                box-sizing: border-box;
+            }
+            /* スマホボタンのアクティブ（選択中）状態 */
+            .tower-btn.active {
+                background: #2e6f40;
+                color: #ffffff;
+                border-color: #2e6f40;
+                box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
             }
 
-            /* 3. スマホ向けに見出し（タワーの階層タイトル）を自動付与して視認性を向上 */
-            #notice::before {
-                content: "📢 お知らせ";
-                display: block;
-                font-size: 16px;
-                font-weight: bold;
-                color: #2e6f40;
-                border-bottom: 2px solid #2e6f40;
-                padding-bottom: 6px;
-                margin-bottom: 12px;
+            /* 3. スマホでのコンテンツ表示エリア（選んだタブのセクションだけを表示） */
+            .mobile-content-area {
+                padding: 0 15px;
+                max-width: 600px;
+                margin: 0 auto;
             }
-            #board::before {
-                content: "📋 今月の掲示板・回覧";
-                display: block;
-                font-size: 16px;
-                font-weight: bold;
-                color: #2e6f40;
-                border-bottom: 2px solid #2e6f40;
-                padding-bottom: 6px;
-                margin-bottom: 12px;
+            /* 元のセクションをスマホ用にスタイリング（初期は非表示、activeで表示） */
+            main .tab-content {
+                display: none !important;
+                background: #ffffff;
+                border-radius: 10px;
+                padding: 20px 16px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+                border: 1px solid #d1ded3;
+                border-top: 4px solid #2e6f40;
+                box-sizing: border-box;
             }
-            #event::before {
-                content: "📅 行事予定";
-                display: block;
-                font-size: 16px;
-                font-weight: bold;
-                color: #2e6f40;
-                border-bottom: 2px solid #2e6f40;
-                padding-bottom: 6px;
-                margin-bottom: 12px;
-            }
-            #about::before {
-                content: "🏠 自治会について";
-                display: block;
-                font-size: 16px;
-                font-weight: bold;
-                color: #2e6f40;
-                border-bottom: 2px solid #2e6f40;
-                padding-bottom: 6px;
-                margin-bottom: 12px;
-            }
-            #contact::before {
-                content: "💬 ご意見・ご要望";
-                display: block;
-                font-size: 16px;
-                font-weight: bold;
-                color: #2e6f40;
-                border-bottom: 2px solid #2e6f40;
-                padding-bottom: 6px;
-                margin-bottom: 12px;
-            }
-            #links::before {
-                content: "🔗 リンク";
-                display: block;
-                font-size: 16px;
-                font-weight: bold;
-                color: #2e6f40;
-                border-bottom: 2px solid #2e6f40;
-                padding-bottom: 6px;
-                margin-bottom: 12px;
+            main .tab-content.active {
+                display: block !important;
             }
 
-            /* 全体余白の調整 */
+            /* スマホ表示時のページ全体背景 */
             body {
                 background-color: #fdfbf7;
                 margin: 0;
                 padding: 0;
             }
             header {
-                padding: 15px;
+                padding: 0;
+                background: none;
             }
-            main {
-                padding: 0 12px;
+            header .header-title {
+                display: none; /* PC用ヘッダータイトルはスマホでは専用カードに置き換えるため非表示 */
             }
         }
     </style>
 </head>
 <body>
 
+<!-- PC用ヘッダー（画面幅768px超で表示。元の構造を完全保持） -->
 <header>
     <h1 class="header-title">
         <span class="sub-line">さいたま市中央区円阿弥</span>
@@ -131,103 +154,138 @@
     </nav>
 </header>
 
+<!-- ==========================================
+     スマホ専用：インフォメーション・タワー版UI
+     ========================================== -->
+<div class="mobile-tower-wrapper">
+    <!-- 緑色のヘッダーカード -->
+    <div class="tower-header-card">
+        <div class="tower-sub-line">さいたま市中央区円阿弥</div>
+        <h1 class="tower-main-line">キララガーデン自治会</h1>
+        <p class="tower-desc">公式スマートフォンサイト</p>
+    </div>
+
+    <!-- 2列のカード型メニューボタン -->
+    <nav class="tower-nav-grid">
+        <button type="button" class="tower-btn active" data-tab="notice">
+            <span>📢</span><span>お知らせ</span>
+        </button>
+        <button type="button" class="tower-btn" data-tab="board">
+            <span>📋</span><span>今月の掲示板</span>
+        </button>
+        <button type="button" class="tower-btn" data-tab="event">
+            <span>📅</span><span>行事予定</span>
+        </button>
+        <button type="button" class="tower-btn" data-tab="about">
+            <span>🏠</span><span>自治会について</span>
+        </button>
+        <button type="button" class="tower-btn" data-tab="contact">
+            <span>💬</span><span>ご意見・ご要望</span>
+        </button>
+        <button type="button" class="tower-btn" data-tab="links">
+            <span>🔗</span><span>リンク集</span>
+        </button>
+    </nav>
+</div>
+
+<!-- メインコンテンツ（PC・スマホ共通のセクション構造） -->
 <main>
+    <div class="mobile-content-area">
+        <!-- お知らせタブ（Googleシートから動的生成） -->
+        <section id="notice" class="tab-content active">
+            <div id="notice-container">
+                <p id="loading">読み込み中...</p>
+            </div>
+        </section>
 
-    <!-- お知らせタブ（Googleシートから動的生成） -->
-    <section id="notice" class="tab-content active">
-        <div id="notice-container">
-            <p id="loading">読み込み中...</p>
-        </div>
-    </section>
+        <!-- 今月の掲示板・回覧タブ（固定コンテンツ） -->
+        <section id="board" class="tab-content">
+            <div class="board-highlight">
+                <p style="margin-bottom: 1rem;">さいたま市中央区が発行する、今月の掲示ポスター・回覧文書はこちらから確認できます。</p>
+                <ul class="link-list" style="margin-bottom: 0;">
+                    <li>
+                        <a href="https://www.city.saitama.lg.jp/001/013/007/p074093.html" target="_blank" rel="noopener noreferrer">
+                            <span>📌 今月の掲示ポスター・回覧文書（さいたま市）</span>
+                            <span class="external-icon">↗ 外部サイト</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <p style="color: #888; font-size: 0.9rem; margin-top: 1rem;">
+                ※上記は「さいたま市」全体の掲示物ページです。中央区独自の情報も含まれます。
+            </p>
+        </section>
 
-    <!-- 今月の掲示板・回覧タブ（固定コンテンツ） -->
-    <section id="board" class="tab-content">
-        <div class="board-highlight">
-            <p style="margin-bottom: 1rem;">さいたま市中央区が発行する、今月の掲示ポスター・回覧文書はこちらから確認できます。</p>
-            <ul class="link-list" style="margin-bottom: 0;">
-                <li>
-                    <a href="https://www.city.saitama.lg.jp/001/013/007/p074093.html" target="_blank" rel="noopener noreferrer">
-                        <span>📌 今月の掲示ポスター・回覧文書（さいたま市）</span>
-                        <span class="external-icon">↗ 外部サイト</span>
+        <!-- 行事予定タブ（Googleシートから動的生成） -->
+        <section id="event" class="tab-content">
+            <div id="event-container">
+                <p>読み込み中...</p>
+            </div>
+        </section>
+
+        <!-- 自治会についてタブ（固定コンテンツ） -->
+        <section id="about" class="tab-content">
+            <div class="info-card">
+                <dl>
+                    <dt>自治会名</dt>
+                    <dd>キララガーデン自治会</dd>
+
+                    <dt>設立</dt>
+                    <dd>2007年9月</dd>
+
+                    <dt>自治会所在地</dt>
+                    <dd>〒338-0007 さいたま市中央区円阿弥5-8-50</dd>
+
+                    <dt>お問い合わせ</dt>
+                    <dd><a href="mailto:kilala-jichi@gmail.com?subject=【お問い合わせ】" class="mail-link">kilala-jichi@gmail.com</a></dd>
+                </dl>
+            </div>
+        </section>
+
+        <!-- ご意見・ご要望タブ（固定コンテンツ） -->
+        <section id="contact" class="tab-content">
+            <div class="notice-warning">
+                <p><strong>⚠️ ご注意ください</strong></p>
+                <p>
+                    こちらは<strong>自治会</strong>へのご意見・ご要望の窓口です。<br>
+                    マンションの管理・修繕・共用部分等に関する<strong>管理組合（理事会）</strong>へのお問い合わせはご遠慮ください。<br>
+                </p>
+                <p></p>
+                <p>
+                    ※管理組合に関するお問い合わせは、別途管理組合の窓口（管理人室）までご連絡をお願いいたします。
+                </p>
+            </div>
+
+            <div class="info-card" style="margin-top: 1rem;">
+                <p style="margin-bottom: 1rem;">
+                    自治会では、以下のような地域コミュニティ活動に関するご意見・ご要望を受け付けております。
+                </p>
+                <ul class="topic-list">
+                    <li>🏘️ 地域コミュニティ活動について</li>
+                    <li>🛡️ 防犯・防災に関するご相談</li>
+                    <li>🎉 地域行事・イベントへの参加について</li>
+                    <li>📋 回覧板・掲示物に関するお問い合わせ</li>
+                    <li>💬 その他、自治会活動全般に関するご意見</li>
+                </ul>
+
+                <p style="margin-top: 1.5rem;">
+                    ご意見・ご要望は、下記メールアドレスまでお気軽にお寄せください。
+                </p>
+                <p style="margin-top: 1rem;">
+                    <a href="mailto:kilala-jichi@gmail.com?subject=【ご意見・ご要望】" class="mail-link">
+                        kilala-jichi@gmail.com
                     </a>
-                </li>
-            </ul>
-        </div>
-        <p style="color: #888; font-size: 0.9rem;">
-            ※上記は「さいたま市」全体の掲示物ページです。中央区独自の情報も含まれます。
-        </p>
-    </section>
+                </p>
+            </div>
+        </section>
 
-    <!-- 行事予定タブ（Googleシートから動的生成） -->
-    <section id="event" class="tab-content">
-        <div id="event-container">
-            <p>読み込み中...</p>
-        </div>
-    </section>
-
-    <!-- 自治会についてタブ（固定コンテンツ） -->
-    <section id="about" class="tab-content">
-        <div class="info-card">
-            <dl>
-                <dt>自治会名</dt>
-                <dd>キララガーデン自治会</dd>
-
-                <dt>設立</dt>
-                <dd>2007年9月</dd>
-
-                <dt>自治会所在地</dt>
-                <dd>〒338-0007 さいたま市中央区円阿弥5-8-50</dd>
-
-                <dt>お問い合わせ</dt>
-                <dd><a href="mailto:kilala-jichi@gmail.com?subject=【お問い合わせ】" class="mail-link">kilala-jichi@gmail.com</a></dd>
-            </dl>
-        </div>
-    </section>
-
-    <!-- ご意見・ご要望タブ（固定コンテンツ） -->
-    <section id="contact" class="tab-content">
-        <div class="notice-warning">
-            <p><strong>⚠️ ご注意ください</strong></p>
-            <p>
-                こちらは<strong>自治会</strong>へのご意見・ご要望の窓口です。<br>
-                マンションの管理・修繕・共用部分等に関する<strong>管理組合（理事会）</strong>へのお問い合わせはご遠慮ください。<br>
-            </p>
-            <p></p>
-            <p>
-                ※管理組合に関するお問い合わせは、別途管理組合の窓口（管理人室）までご連絡をお願いいたします。
-            </p>
-        </div>
-
-        <div class="info-card">
-            <p style="margin-bottom: 1rem;">
-                自治会では、以下のような地域コミュニティ活動に関するご意見・ご要望を受け付けております。
-            </p>
-            <ul class="topic-list">
-                <li>🏘️ 地域コミュニティ活動について</li>
-                <li>🛡️ 防犯・防災に関するご相談</li>
-                <li>🎉 地域行事・イベントへの参加について</li>
-                <li>📋 回覧板・掲示物に関するお問い合わせ</li>
-                <li>💬 その他、自治会活動全般に関するご意見</li>
-            </ul>
-
-            <p style="margin-top: 1.5rem;">
-                ご意見・ご要望は、下記メールアドレスまでお気軽にお寄せください。
-            </p>
-            <p style="margin-top: 1rem;">
-                <a href="mailto:kilala-jichi@gmail.com?subject=【ご意見・ご要望】" class="mail-link">
-                    kilala-jichi@gmail.com
-                </a>
-            </p>
-        </div>
-    </section>
-
-    <!-- リンクタブ（Googleシートから動的生成） -->
-    <section id="links" class="tab-content">
-        <div id="links-container">
-            <p>読み込み中...</p>
-        </div>
-    </section>
-
+        <!-- リンクタブ（Googleシートから動的生成） -->
+        <section id="links" class="tab-content">
+            <div id="links-container">
+                <p>読み込み中...</p>
+            </div>
+        </section>
+    </div>
 </main>
 
 <footer>
@@ -235,5 +293,39 @@
 </footer>
 
 <script src="js/app.js"></script>
+
+<!-- スマホ用インフォメーション・タワーのボタンと既存JS（app.js）を連動させるスクリプト -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const towerBtns = document.querySelectorAll('.tower-btn');
+        
+        towerBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetTab = this.getAttribute('data-tab');
+                
+                // 1. すべてのスマホ用タワーボタンのactiveを外す
+                towerBtns.forEach(b => b.classList.remove('active'));
+                // クリックされたボタンにactiveを付与
+                this.classList.add('active');
+
+                // 2. PC用タブボタン（.tab-button）も同期させる（app.jsの制御基盤との互換性のため）
+                const correspondingTabBtn = document.querySelector(`.tab-button[data-tab="${targetTab}"]`);
+                if (correspondingTabBtn) {
+                    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                    correspondingTabBtn.classList.add('active');
+                }
+
+                // 3. すべてのタブコンテンツを非表示にし、対象のセクションだけを表示する
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                const targetContent = document.getElementById(targetTab);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>
