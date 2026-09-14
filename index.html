@@ -4,308 +4,380 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>キララガーデン自治会</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="css/style.css">
-
     <style>
-        /* ==========================================
-           スマホ専用：インフォメーション・タワー版デザイン
-           （画面幅 768px 以下で自動適用）
-           ========================================== */
-        .mobile-tower-wrapper {
-            display: none; /* PC版では非表示 */
+        /* 共通スタイル・既存デザイン保持 */
+        :root {
+            --primary-color: #2e7d32;
+            --primary-light: #4caf50;
+            --accent-color: #ff9800;
+            --bg-color: #f4f6f5;
+            --text-color: #333333;
+            --white: #ffffff;
+            --gray-border: #cccccc;
         }
 
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* PC用 ナビゲーションタブ */
+        .pc-nav {
+            background-color: var(--white);
+            display: flex;
+            justify-content: center;
+            border-bottom: 2px solid var(--primary-color);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--text-color);
+            white-space: nowrap;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .tab-btn:hover {
+            background-color: #e8f5e9;
+            color: var(--primary-color);
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        /* メインコンテンツエリア */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .section-content {
+            display: none;
+            background: var(--white);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        /* スマホ用 インフォメーション・タワー（2列×4行＝8枠、7個使用） */
+        .mobile-tower-wrapper {
+            display: none; /* デフォルト非表示、メディアクエリで制御 */
+            padding: 15px;
+        }
+
+        .mobile-tower-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .tower-item {
+            background: var(--white);
+            border: 1px solid var(--gray-border);
+            border-radius: 8px;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary-color);
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: background 0.2s;
+        }
+
+        .tower-item:hover {
+            background-color: #f1f8e9;
+        }
+
+        .tower-item.empty {
+            background: transparent;
+            border: none;
+            cursor: default;
+            box-shadow: none;
+        }
+
+        /* ログイン・役員向け専用コンテンツ用スタイル */
+        .login-box {
+            background: #fff3e0;
+            border: 1px solid #ffe0b2;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .login-box p {
+            margin-top: 0;
+            color: #e65100;
+            font-weight: bold;
+        }
+
+        .login-form input {
+            padding: 8px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--gray-border);
+            border-radius: 4px;
+        }
+
+        .login-form button {
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .login-form button:hover {
+            background-color: var(--primary-light);
+        }
+
+        .officer-content {
+            display: none; /* ログイン前は非表示 */
+        }
+
+        .officer-content.unlocked {
+            display: block;
+        }
+
+        .officer-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 4px;
+        }
+
+        /* レスポンシブ切替 */
         @media screen and (max-width: 768px) {
-            /* 1. PC用のタブナビゲーションを非表示にする */
-            header .tab-nav {
-                display: none !important;
+            .pc-nav {
+                display: none; /* スマホではタブを隠しタワー版を表示 */
             }
-
-            /* 2. スマホ専用のインフォメーション・タワー構造を表示 */
             .mobile-tower-wrapper {
-                display: block !important;
-                background-color: var(--bg-color);
-                margin: 0;
-                padding: 0 0 40px 0;
-                font-family: 'BIZ UDGothic', sans-serif;
-            }
-
-            /* スマホ用ヘッダーカード（PC版の --primary-color と完全に連動） */
-            .tower-header-card {
-                background: var(--primary-color);
-                color: white;
-                text-align: center;
-                padding: 20px 15px;
-                border-radius: 0 0 16px 16px;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-                margin-bottom: 20px;
-            }
-            .tower-sub-line {
-                font-size: 0.95rem;
-                opacity: 0.9;
-                margin-bottom: 0.2rem;
-            }
-            .tower-main-line {
-                font-size: 1.5rem;
-                font-weight: 700;
-                margin: 0;
-            }
-
-            /* 2列のカード型ボタン・グリッドレイアウト */
-            .tower-nav-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-                padding: 0 15px;
-                max-width: 600px;
-                margin: 0 auto 20px auto;
-            }
-            .tower-btn {
-                background: var(--card-bg);
-                border: 1px solid #d1ded3;
-                border-radius: 8px;
-                padding: 12px 10px;
-                text-align: center;
-                text-decoration: none;
-                color: var(--primary-color);
-                font-size: 0.95rem;
-                font-weight: 700;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 6px;
-                font-family: inherit;
-                box-sizing: border-box;
-            }
-            /* 選択中（active）のボタン色（PC版の --primary-color と完全に連動） */
-            .tower-btn.active {
-                background: var(--primary-color);
-                color: white;
-                border-color: var(--primary-color);
-            }
-
-            /* 3. スマホでのコンテンツ表示エリア */
-            .mobile-content-area {
-                padding: 0 15px;
-                max-width: 600px;
-                margin: 0 auto;
-            }
-            main .tab-content {
-                display: none !important;
-                background: var(--card-bg);
-                border-radius: 10px;
-                padding: 20px 16px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-                border: 1px solid #d1ded3;
-                border-top: 4px solid var(--primary-color);
-                box-sizing: border-box;
-            }
-            main .tab-content.active {
-                display: block !important;
-            }
-
-            body {
-                background-color: var(--bg-color);
-                margin: 0;
-                padding: 0;
-            }
-            header {
-                padding: 0;
-                background: none;
-            }
-            header .header-title {
-                display: none;
+                display: block;
             }
         }
     </style>
 </head>
 <body>
 
-<!-- PC用ヘッダー（元の構造を完全保持） -->
-<header>
-    <h1 class="header-title">
-        <span class="sub-line">さいたま市中央区円阿弥</span>
-        <span class="main-line">キララガーデン自治会</span>
-    </h1>
-    <nav class="tab-nav">
-        <button class="tab-button active" data-tab="notice">お知らせ</button>
-        <button class="tab-button" data-tab="board">今月の掲示板・回覧</button>
-        <button class="tab-button" data-tab="event">行事予定</button>
-        <button class="tab-button" data-tab="about">自治会について</button>
-        <button class="tab-button" data-tab="contact">ご意見・ご要望</button>
-        <button class="tab-button" data-tab="links">リンク</button>
-    </nav>
-</header>
+    <header>
+        <h1>キララガーデン自治会</h1>
+    </header>
 
-<!-- スマホ専用インフォメーション・タワー版UI -->
-<div class="mobile-tower-wrapper">
-    <div class="tower-header-card">
-        <div class="tower-sub-line">さいたま市中央区円阿弥</div>
-        <h1 class="tower-main-line">キララガーデン自治会</h1>
+    <!-- PC用ナビゲーションタブ（「役員向け」を追加） -->
+    <nav class="pc-nav">
+        <button class="tab-btn active" onclick="switchTab('home')">ホーム</button>
+        <button class="tab-btn" onclick="switchTab('info')">お知らせ</button>
+        <button class="tab-btn" onclick="switchTab('schedule')">行事予定</button>
+        <button class="tab-btn" onclick="switchTab('safety')">防犯・防災</button>
+        <button class="tab-btn" onclick="switchTab('facility')">施設予約</button>
+        <button class="tab-btn" onclick="switchTab('contact')">お問合せ</button>
+        <button class="tab-btn" onclick="switchTab('officer')" style="color: #d32f2f;">役員向け</button>
+    </nav>
+
+    <!-- スマホ用 インフォメーション・タワー（2列×4行＝計7個のボタン＋1枠空き） -->
+    <div class="mobile-tower-wrapper">
+        <div class="mobile-tower-grid">
+            <div class="tower-item" onclick="switchTab('home')">🏠 ホーム</div>
+            <div class="tower-item" onclick="switchTab('info')">📢 お知らせ</div>
+            <div class="tower-item" onclick="switchTab('schedule')">📅 行事予定</div>
+            <div class="tower-item" onclick="switchTab('safety')">🛡️ 防犯・防災</div>
+            <div class="tower-item" onclick="switchTab('facility')">🏢 施設予約</div>
+            <div class="tower-item" onclick="switchTab('contact')">✉️ お問合せ</div>
+            <div class="tower-item" onclick="switchTab('officer')" style="color: #d32f2f; border-color: #d32f2f;">🔒 役員向け</div>
+            <div class="tower-item empty"></div> <!-- 8枠目の調整用空きスペース -->
+        </div>
     </div>
 
-    <nav class="tower-nav-grid">
-        <button type="button" class="tower-btn active" data-tab="notice">
-            <span>📢</span><span>お知らせ</span>
-        </button>
-        <button type="button" class="tower-btn" data-tab="board">
-            <span>📋</span><span>今月の掲示板</span>
-        </button>
-        <button type="button" class="tower-btn" data-tab="event">
-            <span>📅</span><span>行事予定</span>
-        </button>
-        <button type="button" class="tower-btn" data-tab="about">
-            <span>🏠</span><span>自治会について</span>
-        </button>
-        <button type="button" class="tower-btn" data-tab="contact">
-            <span>💬</span><span>ご意見・ご要望</span>
-        </button>
-        <button type="button" class="tower-btn" data-tab="links">
-            <span>🔗</span><span>リンク集</span>
-        </button>
-    </nav>
-</div>
-
-<!-- メインコンテンツ -->
-<main>
-    <div class="mobile-content-area">
-        <!-- お知らせタブ -->
-        <section id="notice" class="tab-content active">
-            <div id="notice-container">
-                <p id="loading">読み込み中...</p>
-            </div>
+    <div class="container">
+        <!-- ホーム -->
+        <section id="home" class="section-content active">
+            <h2>ホーム</h2>
+            <p>キララガーデン自治会公式ホームページへようこそ。地域の皆様の交流と快適な暮らしをサポートします。</p>
         </section>
 
-        <!-- 今月の掲示板・回覧タブ -->
-        <section id="board" class="tab-content">
-            <div class="board-highlight">
-                <p style="margin-bottom: 1rem;">さいたま市中央区が発行する、今月の掲示ポスター・回覧文書はこちらから確認できます。</p>
-                <ul class="link-list" style="margin-bottom: 0;">
-                    <li>
-                        <a href="https://www.city.saitama.lg.jp/001/013/007/p074093.html" target="_blank" rel="noopener noreferrer">
-                            <span>📌 今月の掲示ポスター・回覧文書（さいたま市）</span>
-                            <span class="external-icon">↗ 外部サイト</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <p style="color: #888; font-size: 0.9rem; margin-top: 1rem;">
-                ※上記は「さいたま市」全体の掲示物ページです。中央区独自の情報も含まれます。
-            </p>
+        <!-- お知らせ -->
+        <section id="info" class="section-content">
+            <h2>お知らせ</h2>
+            <ul>
+                <li>2026年4月：春のクリーン作戦を実施します。</li>
+                <li>2026年5月：定期総会のご案内。</li>
+            </ul>
         </section>
 
-        <!-- 行事予定タブ -->
-        <section id="event" class="tab-content">
-            <div id="event-container">
-                <p>読み込み中...</p>
-            </div>
+        <!-- 行事予定 -->
+        <section id="schedule" class="section-content">
+            <h2>行事予定</h2>
+            <p>今年度の年間行事予定をご確認いただけます。</p>
         </section>
 
-        <!-- 自治会についてタブ -->
-        <section id="about" class="tab-content">
-            <div class="info-card">
-                <dl>
-                    <dt>自治会名</dt>
-                    <dd>キララガーデン自治会</dd>
-
-                    <dt>設立</dt>
-                    <dd>2007年9月</dd>
-
-                    <dt>自治会所在地</dt>
-                    <dd>〒338-0007 さいたま市中央区円阿弥5-8-50</dd>
-
-                    <dt>お問い合わせ</dt>
-                    <dd><a href="mailto:kilala-jichi@gmail.com?subject=【お問い合わせ】" class="mail-link">kilala-jichi@gmail.com</a></dd>
-                </dl>
-            </div>
+        <!-- 防犯・防災 -->
+        <section id="safety" class="section-content">
+            <h2>防犯・防災</h2>
+            <p>災害時の避難場所や防災備品についての情報はこちらです。</p>
         </section>
 
-        <!-- ご意見・ご要望タブ -->
-        <section id="contact" class="tab-content">
-            <div class="notice-warning">
-                <p><strong>⚠️ ご注意ください</strong></p>
-                <p>
-                    こちらは<strong>自治会</strong>へのご意見・ご要望の窓口です。<br>
-                    マンションの管理・修繕・共用部分等に関する<strong>管理組合（理事会）</strong>へのお問い合わせはご遠慮ください。<br>
-                </p>
-                <p></p>
-                <p>
-                    ※管理組合に関するお問い合わせは、別途管理組合の窓口（管理人室）までご連絡をお願いいたします。
-                </p>
-            </div>
-
-            <div class="info-card" style="margin-top: 1rem;">
-                <p style="margin-bottom: 1rem;">
-                    自治会では、以下のような地域コミュニティ活動に関するご意見・ご要望を受け付けております。
-                </p>
-                <ul class="topic-list">
-                    <li>🏘️ 地域コミュニティ活動について</li>
-                    <li>🛡️ 防犯・防災に関するご相談</li>
-                    <li>🎉 地域行事・イベントへの参加について</li>
-                    <li>📋 回覧板・掲示物に関するお問い合わせ</li>
-                    <li>💬 その他、自治会活動全般に関するご意見</li>
-                </ul>
-
-                <p style="margin-top: 1.5rem;">
-                    ご意見・ご要望は、下記メールアドレスまでお気軽にお寄せください。
-                </p>
-                <p style="margin-top: 1rem;">
-                    <a href="mailto:kilala-jichi@gmail.com?subject=【ご意見・ご要望】" class="mail-link">
-                        kilala-jichi@gmail.com
-                    </a>
-                </p>
-            </div>
+        <!-- 施設予約 -->
+        <section id="facility" class="section-content">
+            <h2>施設予約</h2>
+            <p>集会所などの予約状況確認と申し込みができます。</p>
         </section>
 
-        <!-- リンクタブ -->
-        <section id="links" class="tab-content">
-            <div id="links-container">
-                <p>読み込み中...</p>
+        <!-- お問合せ -->
+        <section id="contact" class="section-content">
+            <h2>お問合せ</h2>
+            <p>自治会へのご意見・ご質問はこちらからお願いいたします。</p>
+        </section>
+
+        <!-- 【新設】役員向けページ（ログインモック ＆ 専用コンテンツ） -->
+        <section id="officer" class="section-content">
+            <h2>役員向けポータル</h2>
+            
+            <!-- ログインフォーム（モック） -->
+            <div id="login-container" class="login-box">
+                <p>⚠️ 【重要】役員用ページです。<br>関係者以外のアクセスおよび情報の持ち出しは固くお断りします。</p>
+                <div class="login-form">
+                    <input type="text" id="login-id" placeholder="役員ID" />
+                    <input type="password" id="login-pass" placeholder="パスワード" />
+                    <button onclick="handleLogin()">ログイン</button>
+                    <p id="login-error" style="color: red; font-size: 0.9rem; margin-top: 5px; display: none;">IDまたはパスワードが違います。</p>
+                </div>
+                <p style="font-size: 0.85rem; color: #666; margin-bottom: 0;">※動作確認用モックID: <code>kirara</code> / PW: <code>kanji</code></p>
+            </div>
+
+            <!-- 認証後に表示される役員専用コンテンツ -->
+            <div id="officer-content" class="officer-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">
+                    <span style="color: var(--primary-color); font-weight: bold;">✅ 認証成功：役員モードで接続中</span>
+                    <button onclick="handleLogout()" style="padding: 4px 10px; font-size: 0.8rem; background: #666; color: #fff; border: none; border-radius: 4px; cursor: pointer;">ログアウト</button>
+                </div>
+
+                <!-- 専用の掲示板 -->
+                <div class="officer-section">
+                    <h3>📌 役員専用掲示板</h3>
+                    <p>次回の役員会に向けた申し送り事項や、緊急の連絡事項を共有しています。</p>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li>【連絡】第3回定例役員会の資料をアップロードしました（2026/04/15）</li>
+                        <li>【確認】自治会館の修繕見積もりについて回覧を開始します。</li>
+                    </ul>
+                </div>
+
+                <!-- ファイル一覧 -->
+                <div class="officer-section">
+                    <h3>📁 役員用ファイル一覧</h3>
+                    <p>各種申請書やマニュアル、過去の議事録などをダウンロードできます。</p>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li><a href="#" onclick="alert('モック動作です'); return false;">📄 令和8年度_自治会役員名簿.pdf</a></li>
+                        <li><a href="#" onclick="alert('モック動作です'); return false;">📄 施設利用申請書フォーム.xlsx</a></li>
+                        <li><a href="#" onclick="alert('モック動作です'); return false;">📄 定期総会議事録（直近）.pdf</a></li>
+                    </ul>
+                </div>
+
+                <!-- 特定の連絡先 -->
+                <div class="officer-section">
+                    <h3>📞 役員間 緊急連絡先・関係機関</h3>
+                    <p>役員同士の連絡網、および行政・関連団体の窓口一覧です。</p>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.95rem;">
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <th style="text-align: left; padding: 6px;">担当・役職</th>
+                            <th style="text-align: left; padding: 6px;">氏名</th>
+                            <th style="text-align: left; padding: 6px;">連絡先</th>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 6px;">自治会長</td>
+                            <td style="padding: 6px;">山田 太郎</td>
+                            <td style="padding: 6px;">090-XXXX-XXXX</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 6px;">地区担当幹事</td>
+                            <td style="padding: 6px;">佐藤 花子</td>
+                            <td style="padding: 6px;">080-XXXX-XXXX</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </section>
     </div>
-</main>
 
-<footer>
-    <p>&copy; キララガーデン自治会</p>
-</footer>
+    <script>
+        // タブ切り替え・スマホタワー共通の表示制御関数
+        function switchTab(targetId) {
+            // 全てのセクションを非表示
+            const sections = document.querySelectorAll('.section-content');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
 
-<script src="js/app.js"></script>
+            // 該当セクションを表示
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const towerBtns = document.querySelectorAll('.tower-btn');
-        
-        towerBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const targetTab = this.getAttribute('data-tab');
-                
-                towerBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-
-                const correspondingTabBtn = document.querySelector(`.tab-button[data-tab="${targetTab}"]`);
-                if (correspondingTabBtn) {
-                    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                    correspondingTabBtn.classList.add('active');
-                }
-
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                const targetContent = document.getElementById(targetTab);
-                if (targetContent) {
-                    targetContent.classList.add('active');
+            // PC用タブのactiveクラス切り替え
+            const pcButtons = document.querySelectorAll('.pc-nav .tab-btn');
+            pcButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick').includes(targetId)) {
+                    btn.classList.add('active');
                 }
             });
-        });
-    });
-</script>
+
+            // 画面トップへスムーズスクロール（スマホ等で便利）
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ログインモックの処理
+        function handleLogin() {
+            const inputId = document.getElementById('login-id').value;
+            const inputPass = document.getElementById('login-pass').value;
+            const errorMsg = document.getElementById('login-error');
+
+            // 仮のID/PW検証 (kirara / kanji)
+            if (inputId === 'kirara' && inputPass === 'kanji') {
+                errorMsg.style.display = 'none';
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('officer-content').classList.add('unlocked');
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        // ログアウト処理（モック用）
+        function handleLogout() {
+            document.getElementById('login-id').value = '';
+            document.getElementById('login-pass').value = '';
+            document.getElementById('login-container').style.display = 'block';
+            document.getElementById('officer-content').classList.remove('unlocked');
+        }
+    </script>
 </body>
 </html>
