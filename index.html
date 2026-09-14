@@ -242,7 +242,28 @@
 <script src="js/app.js"></script>
 
 <script>
-    // CSVパーサ（セル内改行・ダブルクォーテーション完全対応）
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwQqhJ9dZmh4rZJyiuXJ8t_oTA7U2sOIFiLy1jFgSXWTR94MPzBJJDcg7jgOHJQIHyKTQ/exec";
+
+    async function sendAccessLog(type, userId, detail) {
+        let clientIp = "取得失敗";
+        try {
+            const res = await fetch('https://api.ipify.org?format=json');
+            const data = await res.json();
+            clientIp = data.ip;
+        } catch (e) {}
+
+        const timestamp = new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
+        const deviceInfo = [`IP: ${clientIp}`, `解像度: ${window.screen.width}x${window.screen.height}`, `UA: ${navigator.userAgent}`].join(" | ");
+
+        fetch(GAS_WEB_APP_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ timestamp, type, userId: userId || "未入力", detail, userAgent: deviceInfo })
+        }).catch(err => console.error(err));
+    }
+
+    // 本格的なCSVパーサ
     function parseCSVToRows(text) {
         const rows = [];
         let currentRow = [];
@@ -422,25 +443,30 @@
         pcTabBtns.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
     });
 
+    // ログイン処理（アクセスログ送信 ＋ スプレッドシートからの動的データ読み込み）
     function handleLogin() {
         const inputId = document.getElementById('login-id').value;
         const inputPass = document.getElementById('login-pass').value;
         const errorMsg = document.getElementById('login-error');
 
         if (inputId === 'kirara' && inputPass === 'kanji') {
+            sendAccessLog("ログイン", inputId, "成功");
             errorMsg.style.display = 'none';
             document.getElementById('login-container').style.display = 'none';
             document.getElementById('officer-content').style.display = 'block';
             
-            // ログイン成功時にスプレッドシートからデータを取得する
+            // スプレッドシートからの動的データ取得を実行
             loadOfficerPortalDataFromSheets();
         } else {
+            sendAccessLog("ログイン", inputId, "失敗");
             errorMsg.style.display = 'block';
         }
     }
 
     function handleDownload(fileName) {
-        alert(fileName + ' のダウンロードを開始します。');
+        const currentId = document.getElementById('login-id').value || "kirara";
+        sendAccessLog("ダウンロード", currentId, fileName);
+        alert(fileName + ' のダウンロードログを記録しました。');
     }
 
     function handleLogout() {
