@@ -17,7 +17,7 @@ const NOTICE_GID = '0';
 const EVENT_GID = '895056638';
 const LINK_GID = '348535548';
 
-// 役員ページ用 GID
+// 役員ページ用 GID（ご指定の値に設定）
 const OFFICER_NOTICE_GID = '1832753520';
 const OFFICER_FILE_GID = '1119241247';
 const OFFICER_LINK_GID = '2118239597';
@@ -328,7 +328,7 @@ function renderLinks(items, container) {
 // ==========================================
 async function loadOfficerPortalData() {
     try {
-        // 1. 伝言データの取得
+        // 1. 伝言データの取得 (gid=1832753520)
         const noticeRes = await fetch(OFFICER_NOTICE_URL);
         if (noticeRes.ok) {
             const rows = parseCSVToRows(await noticeRes.text());
@@ -346,28 +346,32 @@ async function loadOfficerPortalData() {
             }
         }
 
-        // 2. ファイルデータの取得
+        // 2. ファイルデータの取得 (gid=1119241247)
         const fileRes = await fetch(OFFICER_FILE_URL);
         if (fileRes.ok) {
             const rows = parseCSVToRows(await fileRes.text());
             const files = [];
             for (let i = 1; i < rows.length; i++) {
                 if (rows[i][0] && rows[i][0].trim() !== '') {
-                    files.push({ name: rows[i][0].trim(), meta: rows[i][1] ? rows[i][1].trim() : 'PDF' });
+                    files.push({ 
+                        name: rows[i][0].trim(), 
+                        meta: rows[i][1] ? rows[i][1].trim() : 'PDF',
+                        url: rows[i][2] ? rows[i][2].trim() : '#'
+                    });
                 }
             }
             const fileList = document.getElementById('dynamic-files');
             if (fileList) {
                 fileList.innerHTML = files.length > 0
                     ? files.map(file => `
-                        <li><a href="#" onclick="handleDownload('${escapeHtml(file.name)}'); return false;">
+                        <li><a href="${escapeHtml(file.url)}" target="_blank" rel="noopener noreferrer">
                             <span>📄 ${escapeHtml(file.name)}</span><span class="file-meta">${escapeHtml(file.meta)}</span>
                         </a></li>`).join('')
                     : '<li>現在、共有ファイルはありません。</li>';
             }
         }
 
-        // 3. クイックリンクデータの取得
+        // 3. クイックリンクデータの取得 (gid=2118239597)
         const linkRes = await fetch(OFFICER_LINK_URL);
         if (linkRes.ok) {
             const rows = parseCSVToRows(await linkRes.text());
@@ -388,7 +392,7 @@ async function loadOfficerPortalData() {
             }
         }
 
-        // 4. 緊急連絡先データの取得
+        // 4. 緊急連絡先データの取得 (gid=162722256)
         const contactRes = await fetch(OFFICER_CONTACT_URL);
         if (contactRes.ok) {
             const rows = parseCSVToRows(await contactRes.text());
@@ -409,7 +413,7 @@ async function loadOfficerPortalData() {
                         <tr style="border-bottom: 1px solid #eee;">
                             <td style="padding: 6px;">${escapeHtml(c.role)}</td>
                             <td style="padding: 6px;">${escapeHtml(c.name)}</td>
-                            <td style="padding: 6px;">${escapeHtml(c.tel)}</td>
+                            <td style="padding: 6px;"><a href="tel:${escapeHtml(c.tel)}" class="mail-link">${escapeHtml(c.tel)}</a></td>
                         </tr>`).join('')
                     : '<tr><td colspan="3" style="padding: 6px;">データがありません。</td></tr>';
             }
@@ -436,6 +440,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadEvents();
     loadLinks();
     
-    // 役員ページ要素が存在する場合（またはログイン状態の判定後など）にデータを読み込む場合
-    // 必要に応じて呼び出しを行ってください（ログイン成功時や役員ページ表示時に loadOfficerPortalData() を実行する設計にしてください）
+    // 役員ページ用データの読み込みを実行
+    loadOfficerPortalData();
 });
