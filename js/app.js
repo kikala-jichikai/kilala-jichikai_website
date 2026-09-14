@@ -6,29 +6,38 @@
 // スプレッドシートのURLを変更する場合は
 // 下記の SHEET_ID を書き換えてください。
 //
-// 「お知らせ」「行事予定」「リンク」で別シートを参照する構成です。
 // gid（シートのID）はスプレッドシートのURLから確認できます。
 // 例）.../edit#gid=123456789 の「123456789」部分
-//
-// 【列構成（お知らせ・行事予定シート共通）】
-// A列:日付(掲載開始日を兼ねる) B列:カテゴリ C列:タイトル
-// D列:本文 E列:画像URL F列:PDF URL G列:掲載終了日
-//
-// 【列構成（リンクシート）】
-// A列:カテゴリ B列:リンク名 C列:URL
 // ==========================================
 
 const SHEET_ID = '1rwAyehf35erUJ_RAnHhblQTaVg5f2v0Tmm7LZEKi5pQ';
+
+// コンテンツ用 GID
 const NOTICE_GID = '0';
 const EVENT_GID = '895056638';
 const LINK_GID = '348535548';
 
+// 役員ページ用 GID
+const OFFICER_NOTICE_GID = '1832753520';
+const OFFICER_FILE_GID = '1119241247';
+const OFFICER_LINK_GID = '2118239597';
+const OFFICER_CONTACT_GID = '162722256';
+
 const NOTICE_URL = 
-  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${NOTICE_GID}`;
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${NOTICE_GID}`;
 const EVENT_URL = 
-  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${EVENT_GID}`;
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${EVENT_GID}`;
 const LINK_URL = 
-  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${LINK_GID}`;
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${LINK_GID}`;
+
+const OFFICER_NOTICE_URL = 
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${OFFICER_NOTICE_GID}`;
+const OFFICER_FILE_URL = 
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${OFFICER_FILE_GID}`;
+const OFFICER_LINK_URL = 
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${OFFICER_LINK_GID}`;
+const OFFICER_CONTACT_URL = 
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${OFFICER_CONTACT_GID}`;
 
 // 新着マークを表示する日数（この日数以内の投稿にNEWバッジを表示）
 const NEW_THRESHOLD_DAYS = 3;
@@ -79,17 +88,13 @@ async function loadLinks() {
     const container = document.getElementById('links-container');
     try {
         const response = await fetch(LINK_URL);
-
-        if (!response.ok) {
-            throw new Error('スプレッドシートの取得に失敗しました');
-        }
+        if (!response.ok) throw new Error('スプレッドシートの取得に失敗しました');
 
         const csvText = await response.text();
         const rows = parseCSVToRows(csvText);
         const items = parseLinkRows(rows);
 
         renderLinks(items, container);
-
     } catch (error) {
         container.innerHTML = `
             <div class="error-message">
@@ -107,17 +112,13 @@ async function loadLinks() {
 async function loadAndRenderNotices(url, container, defaultCategory) {
     try {
         const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error('スプレッドシートの取得に失敗しました');
-        }
+        if (!response.ok) throw new Error('スプレッドシートの取得に失敗しました');
 
         const csvText = await response.text();
         const rows = parseCSVToRows(csvText);
         const items = parseNoticeRows(rows);
 
         renderItems(items, container, defaultCategory);
-
     } catch (error) {
         container.innerHTML = `
             <div class="error-message">
@@ -145,11 +146,9 @@ function parseCSVToRows(text) {
         if (inQuotes) {
             if (char === '"') {
                 if (nextChar === '"') {
-                    // エスケープされたダブルクォーテーション ("")
                     currentField += '"';
                     i++;
                 } else {
-                    // クォーテーション終了
                     inQuotes = false;
                 }
             } else {
@@ -162,16 +161,12 @@ function parseCSVToRows(text) {
                 currentRow.push(currentField);
                 currentField = '';
             } else if (char === '\r') {
-                // 改行コードの処理 (CRLF または CR)
-                if (nextChar === '\n') {
-                    i++;
-                }
+                if (nextChar === '\n') i++;
                 currentRow.push(currentField);
                 rows.push(currentRow);
                 currentRow = [];
                 currentField = '';
             } else if (char === '\n') {
-                // 改行コード (LF)
                 currentRow.push(currentField);
                 rows.push(currentRow);
                 currentRow = [];
@@ -181,12 +176,10 @@ function parseCSVToRows(text) {
             }
         }
     }
-    // 最後の行の処理
     if (currentField !== '' || currentRow.length > 0) {
         currentRow.push(currentField);
         rows.push(currentRow);
     }
-
     return rows;
 }
 
@@ -195,7 +188,6 @@ function parseCSVToRows(text) {
 // ==========================================
 function parseNoticeRows(rows) {
     const items = [];
-    // 1行目はヘッダーなので i = 1 から開始
     for (let i = 1; i < rows.length; i++) {
         const values = rows[i];
         if (values && values[0] && values[0].trim() !== '') {
@@ -210,14 +202,12 @@ function parseNoticeRows(rows) {
             });
         }
     }
-
     items.sort((a, b) => new Date(b.date) - new Date(a.date));
     return items;
 }
 
 // ==========================================
 // 行データ変換（リンク用）
-// A列:カテゴリ B列:リンク名 C列:URL
 // ==========================================
 function parseLinkRows(rows) {
     const items = [];
@@ -235,26 +225,20 @@ function parseLinkRows(rows) {
 }
 
 // ==========================================
-// 掲載期間判定
+// 掲載期間・新着判定など
 // ==========================================
 function isVisible(dateStr, endDateStr) {
     const now = new Date();
-
     const startDate = new Date(dateStr);
     if (now < startDate) return false;
-
     if (endDateStr) {
         const endDate = new Date(endDateStr);
         endDate.setHours(23, 59, 59, 999);
         if (now > endDate) return false;
     }
-
     return true;
 }
 
-// ==========================================
-// 新着判定
-// ==========================================
 function isNew(dateStr) {
     const itemDate = new Date(dateStr);
     const now = new Date();
@@ -262,12 +246,8 @@ function isNew(dateStr) {
     return diffDays >= 0 && diffDays <= NEW_THRESHOLD_DAYS;
 }
 
-// ==========================================
-// まもなく終了判定
-// ==========================================
 function isEndingSoon(endDateStr) {
     if (!endDateStr) return false;
-
     const endDate = new Date(endDateStr);
     const now = new Date();
     const diffDays = (endDate - now) / (1000 * 60 * 60 * 24);
@@ -279,7 +259,6 @@ function isEndingSoon(endDateStr) {
 // ==========================================
 function renderItems(items, container, defaultCategory) {
     const visibleItems = items.filter(item => isVisible(item.date, item.endDate));
-
     if (visibleItems.length === 0) {
         container.innerHTML = '<p>現在情報はありません。</p>';
         return;
@@ -289,16 +268,8 @@ function renderItems(items, container, defaultCategory) {
         const category = item.category || defaultCategory;
         const newBadge = isNew(item.date) ? '<span class="new-badge">NEW</span>' : '';
         const endBadge = isEndingSoon(item.endDate) ? '<span class="end-badge">まもなく終了</span>' : '';
-
-        const pdfLink = item.pdfUrl
-            ? `<a href="${escapeHtml(item.pdfUrl)}" class="pdf-link" target="_blank" rel="noopener noreferrer">📄 資料PDFをダウンロード</a>`
-            : '';
-
-        const image = item.imageUrl
-            ? `<img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.title)}" class="notice-image">`
-            : '';
-
-        // セル内改行（\n）をHTMLの改行（<br>）に変換して綺麗に出力する
+        const pdfLink = item.pdfUrl ? `<a href="${escapeHtml(item.pdfUrl)}" class="pdf-link" target="_blank" rel="noopener noreferrer">📄 資料PDFをダウンロード</a>` : '';
+        const image = item.imageUrl ? `<img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.title)}" class="notice-image">` : '';
         const formattedBody = escapeHtml(item.body).replace(/\n/g, '<br>');
 
         return `
@@ -319,7 +290,7 @@ function renderItems(items, container, defaultCategory) {
 }
 
 // ==========================================
-// 描画処理（リンク用・カテゴリ別グループ化）
+// 描画処理（リンク用）
 // ==========================================
 function renderLinks(items, container) {
     if (items.length === 0) {
@@ -329,9 +300,7 @@ function renderLinks(items, container) {
 
     const grouped = {};
     items.forEach(item => {
-        if (!grouped[item.category]) {
-            grouped[item.category] = [];
-        }
+        if (!grouped[item.category]) grouped[item.category] = [];
         grouped[item.category].push(item);
     });
 
@@ -351,11 +320,108 @@ function renderLinks(items, container) {
         });
         html += '</ul>';
     }
-
     container.innerHTML = html;
 }
 
+// ==========================================
+// 🔒 役員ページ用データ読み込み
+// ==========================================
+async function loadOfficerPortalData() {
+    try {
+        // 1. 伝言データの取得
+        const noticeRes = await fetch(OFFICER_NOTICE_URL);
+        if (noticeRes.ok) {
+            const rows = parseCSVToRows(await noticeRes.text());
+            const notices = [];
+            for (let i = 1; i < rows.length; i++) {
+                if (rows[i][0] && rows[i][0].trim() !== '') {
+                    notices.push({ date: rows[i][0].trim(), text: rows[i][1] ? rows[i][1].trim() : '' });
+                }
+            }
+            const noticeList = document.getElementById('dynamic-notices');
+            if (noticeList) {
+                noticeList.innerHTML = notices.length > 0 
+                    ? notices.map(item => `<li><strong>${escapeHtml(item.text)}</strong> ${item.date ? '(' + escapeHtml(item.date) + ')' : ''}</li>`).join('')
+                    : '<li>現在、新しい伝言はありません。</li>';
+            }
+        }
+
+        // 2. ファイルデータの取得
+        const fileRes = await fetch(OFFICER_FILE_URL);
+        if (fileRes.ok) {
+            const rows = parseCSVToRows(await fileRes.text());
+            const files = [];
+            for (let i = 1; i < rows.length; i++) {
+                if (rows[i][0] && rows[i][0].trim() !== '') {
+                    files.push({ name: rows[i][0].trim(), meta: rows[i][1] ? rows[i][1].trim() : 'PDF' });
+                }
+            }
+            const fileList = document.getElementById('dynamic-files');
+            if (fileList) {
+                fileList.innerHTML = files.length > 0
+                    ? files.map(file => `
+                        <li><a href="#" onclick="handleDownload('${escapeHtml(file.name)}'); return false;">
+                            <span>📄 ${escapeHtml(file.name)}</span><span class="file-meta">${escapeHtml(file.meta)}</span>
+                        </a></li>`).join('')
+                    : '<li>現在、共有ファイルはありません。</li>';
+            }
+        }
+
+        // 3. クイックリンクデータの取得
+        const linkRes = await fetch(OFFICER_LINK_URL);
+        if (linkRes.ok) {
+            const rows = parseCSVToRows(await linkRes.text());
+            const links = [];
+            for (let i = 1; i < rows.length; i++) {
+                if (rows[i][0] && rows[i][0].trim() !== '' && rows[i][1]) {
+                    links.push({ title: rows[i][0].trim(), url: rows[i][1].trim() });
+                }
+            }
+            const linkList = document.getElementById('dynamic-links');
+            if (linkList) {
+                linkList.innerHTML = links.length > 0
+                    ? links.map(link => `
+                        <li><a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">
+                            <span>${escapeHtml(link.title)}</span><span class="external-icon">↗ 外部</span>
+                        </a></li>`).join('')
+                    : '<li>リンクはありません。</li>';
+            }
+        }
+
+        // 4. 緊急連絡先データの取得
+        const contactRes = await fetch(OFFICER_CONTACT_URL);
+        if (contactRes.ok) {
+            const rows = parseCSVToRows(await contactRes.text());
+            const contacts = [];
+            for (let i = 1; i < rows.length; i++) {
+                if (rows[i][0] && rows[i][0].trim() !== '') {
+                    contacts.push({
+                        role: rows[i][0].trim(),
+                        name: rows[i][1] ? rows[i][1].trim() : '',
+                        tel: rows[i][2] ? rows[i][2].trim() : ''
+                    });
+                }
+            }
+            const contactTable = document.getElementById('dynamic-contacts');
+            if (contactTable) {
+                contactTable.innerHTML = contacts.length > 0
+                    ? contacts.map(c => `
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 6px;">${escapeHtml(c.role)}</td>
+                            <td style="padding: 6px;">${escapeHtml(c.name)}</td>
+                            <td style="padding: 6px;">${escapeHtml(c.tel)}</td>
+                        </tr>`).join('')
+                    : '<tr><td colspan="3" style="padding: 6px;">データがありません。</td></tr>';
+            }
+        }
+
+    } catch (e) {
+        console.error("役員ポータルデータ取得エラー:", e);
+    }
+}
+
 function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
@@ -369,4 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadNotices();
     loadEvents();
     loadLinks();
+    
+    // 役員ページ要素が存在する場合（またはログイン状態の判定後など）にデータを読み込む場合
+    // 必要に応じて呼び出しを行ってください（ログイン成功時や役員ページ表示時に loadOfficerPortalData() を実行する設計にしてください）
 });
