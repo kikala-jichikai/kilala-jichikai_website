@@ -14,7 +14,6 @@
     <style>
         /* ==========================================
             スマホ専用：インフォメーション・タワー版デザイン
-            （画面幅 768px 以下で自動適用）
             ========================================== */
         .mobile-tower-wrapper {
             display: none; /* PC版では非表示 */
@@ -35,7 +34,6 @@
                 font-family: 'BIZ UDGothic', sans-serif;
             }
 
-            /* スマホ用ヘッダーカード（PC版の --primary-color と完全に連動） */
             .tower-header-card {
                 background: var(--primary-color);
                 color: white;
@@ -56,7 +54,7 @@
                 margin: 0;
             }
 
-            /* 2列のカード型ボタン・グリッドレイアウト（7項目＋空き枠で綺麗に収まるよう調整） */
+            /* グリッドレイアウト（8項目：7つのタブ＋1つの空き枠） */
             .tower-nav-grid {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
@@ -84,24 +82,12 @@
                 font-family: inherit;
                 box-sizing: border-box;
             }
-            /* 選択中（active）のボタン色（PC版の --primary-color と完全に連動） */
             .tower-btn.active {
                 background: var(--primary-color);
                 color: white;
                 border-color: var(--primary-color);
             }
-            /* 役員向けボタンの特別な配色（任意） */
-            .tower-btn.officer-btn {
-                color: #d32f2f;
-                border-color: #ffcdd2;
-            }
-            .tower-btn.officer-btn.active {
-                background: #d32f2f;
-                color: white;
-                border-color: #d32f2f;
-            }
 
-            /* 3. スマホでのコンテンツ表示エリア */
             .mobile-content-area {
                 padding: 0 15px;
                 max-width: 600px;
@@ -138,7 +124,7 @@
 </head>
 <body>
 
-<!-- PC用ヘッダー（元の構造を完全保持 ＋ 役員向けタブ追加） -->
+<!-- PC用ヘッダー -->
 <header>
     <h1 class="header-title">
         <span class="sub-line">さいたま市中央区円阿弥</span>
@@ -151,12 +137,11 @@
         <button class="tab-button" data-tab="about">自治会について</button>
         <button class="tab-button" data-tab="contact">ご意見・ご要望</button>
         <button class="tab-button" data-tab="links">リンク</button>
-        <!-- 【追加】PC用 役員向けタブ -->
-        <button class="tab-button" data-tab="officer" style="color: #d32f2f; font-weight: bold;">🔒 役員向け</button>
+        <button class="tab-button" data-tab="officer">🔒 役員向け</button>
     </nav>
 </header>
 
-<!-- スマホ専用インフォメーション・タワー版UI（7項目に拡張） -->
+<!-- スマホ専用インフォメーション・タワー版UI -->
 <div class="mobile-tower-wrapper">
     <div class="tower-header-card">
         <div class="tower-sub-line">さいたま市中央区円阿弥</div>
@@ -182,8 +167,7 @@
         <button type="button" class="tower-btn" data-tab="links">
             <span>🔗</span><span>リンク</span>
         </button>
-        <!-- 【追加】スマホ用 役員向けボタン（7項目目） -->
-        <button type="button" class="tower-btn officer-btn" data-tab="officer">
+        <button type="button" class="tower-btn" data-tab="officer">
             <span>🔒</span><span>役員向け</span>
         </button>
         <!-- 8枠目のグリッド調整用空き要素 -->
@@ -289,26 +273,26 @@
             </div>
         </section>
 
-        <!-- 【追加】役員向けタブコンテンツ（ログインモック ＆ 専用コンテンツ） -->
+        <!-- 役員向けタブコンテンツ（他のタブと同じ標準カードデザインに統一） -->
         <section id="officer" class="tab-content">
-            <div class="info-card" style="border-top: 4px solid #d32f2f;">
+            <div class="info-card">
                 <h2>役員向けポータル</h2>
                 
                 <!-- ログインフォーム（モック） -->
                 <div id="login-container" style="margin-top: 15px;">
-                    <p style="color: #d32f2f; font-weight: bold; font-size: 0.95rem; line-height: 1.5;">
-                        ⚠️ 【重要】役員用ページです。<br>関係者以外のアクセスおよび情報の持ち出しは固くお断りします。
+                    <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">
+                        ⚠️ 【重要】役員用ページです。関係者以外のアクセスおよび情報の持ち出しは固くお断りします。
                     </p>
                     <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px; max-width: 400px;">
                         <input type="text" id="login-id" placeholder="役員ID" style="padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;" />
                         <input type="password" id="login-pass" placeholder="パスワード" style="padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;" />
-                        <button type="button" onclick="handleLogin()" style="padding: 10px; background: #d32f2f; color: #fff; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; font-weight: bold;">ログイン</button>
+                        <button type="button" onclick="handleLogin()" style="padding: 10px; background: var(--primary-color); color: #fff; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; font-weight: bold;">ログイン</button>
                         <p id="login-error" style="color: red; font-size: 0.85rem; margin: 0; display: none;">IDまたはパスワードが違います。</p>
                     </div>
                     <p style="font-size: 0.8rem; color: #666; margin-top: 15px;">※動作確認用モックID: <code>kirara</code> / PW: <code>kanji</code></p>
                 </div>
 
-                <!-- 認証後に表示される役員専用コンテンツ（初期状態は非表示） -->
+                <!-- 認証後に表示される役員専用コンテンツ -->
                 <div id="officer-content" style="display: none; margin-top: 15px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; background: #e8f5e9; border: 1px solid #c8e6c9; padding: 10px 15px; border-radius: 6px; margin-bottom: 20px;">
                         <span style="color: #2e7d32; font-weight: bold; font-size: 0.95rem;">✅ 認証成功：役員モードで接続中</span>
@@ -317,7 +301,7 @@
 
                     <!-- 専用の掲示板 -->
                     <div style="margin-bottom: 20px;">
-                        <h3 style="color: #333; border-bottom: 2px solid #d32f2f; padding-bottom: 6px; font-size: 1.1rem;">📌 役員専用掲示板</h3>
+                        <h3 style="color: #333; border-bottom: 2px solid var(--primary-color); padding-bottom: 6px; font-size: 1.1rem;">📌 役員専用掲示板</h3>
                         <p style="font-size: 0.9rem; color: #666; margin: 8px 0;">次回の役員会に向けた申し送り事項や、緊急の連絡事項を共有しています。</p>
                         <ul style="margin: 0; padding-left: 20px; line-height: 1.8; font-size: 0.95rem;">
                             <li>【連絡】第3回定例役員会の資料をアップロードしました（2026/04/15）</li>
@@ -327,7 +311,7 @@
 
                     <!-- ファイル一覧 -->
                     <div style="margin-bottom: 20px;">
-                        <h3 style="color: #333; border-bottom: 2px solid #d32f2f; padding-bottom: 6px; font-size: 1.1rem;">📁 役員用ファイル一覧</h3>
+                        <h3 style="color: #333; border-bottom: 2px solid var(--primary-color); padding-bottom: 6px; font-size: 1.1rem;">📁 役員用ファイル一覧</h3>
                         <p style="font-size: 0.9rem; color: #666; margin: 8px 0;">各種申請書やマニュアル、過去の議事録などをダウンロードできます。</p>
                         <ul style="margin: 0; padding-left: 20px; line-height: 1.8; font-size: 0.95rem;">
                             <li><a href="#" onclick="alert('モック動作です'); return false;" style="color: #1976d2; text-decoration: none;">📄 令和8年度_自治会役員名簿.pdf</a></li>
@@ -337,7 +321,7 @@
 
                     <!-- 特定の連絡先 -->
                     <div>
-                        <h3 style="color: #333; border-bottom: 2px solid #d32f2f; padding-bottom: 6px; font-size: 1.1rem;">📞 役員間 緊急連絡先・関係機関</h3>
+                        <h3 style="color: #333; border-bottom: 2px solid var(--primary-color); padding-bottom: 6px; font-size: 1.1rem;">📞 役員間 緊急連絡先・関係機関</h3>
                         <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem;">
                             <thead>
                                 <tr style="background: #f5f5f5; border-bottom: 1px solid #ddd;">
@@ -373,23 +357,20 @@
 <script src="js/app.js"></script>
 
 <script>
-    // 元のタブ切り替えロジックをベースに、PC用ボタンとスマホ用タワーボタンの両方に対応させた拡張版
+    // タブ切り替えロジック（PC・スマホ両対応）
     document.addEventListener('DOMContentLoaded', function() {
         const towerBtns = document.querySelectorAll('.tower-btn');
         const pcTabBtns = document.querySelectorAll('.tab-button');
         
         function switchTab(targetTab) {
-            // スマホボタンの active 切り替え
             towerBtns.forEach(b => b.classList.remove('active'));
             const activeTowerBtn = document.querySelector(`.tower-btn[data-tab="${targetTab}"]`);
             if (activeTowerBtn) activeTowerBtn.classList.add('active');
 
-            // PC用ボタンの active 切り替え
             pcTabBtns.forEach(b => b.classList.remove('active'));
             const activePcBtn = document.querySelector(`.tab-button[data-tab="${targetTab}"]`);
             if (activePcBtn) activePcBtn.classList.add('active');
 
-            // コンテンツの表示切り替え
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
@@ -399,7 +380,6 @@
             }
         }
 
-        // スマホタワーボタンのクリックイベント
         towerBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 const targetTab = this.getAttribute('data-tab');
@@ -407,7 +387,6 @@
             });
         });
 
-        // PC用タブボタンのクリックイベント
         pcTabBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 const targetTab = this.getAttribute('data-tab');
