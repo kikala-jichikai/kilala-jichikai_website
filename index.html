@@ -330,7 +330,7 @@
                 <!-- ログインフォーム（モック） -->
                 <div id="login-container" style="margin-top: 15px;">
                     <p style="color: #666; font-size: 0.95rem; line-height: 1.6;">
-                        ⚠️ 【重要】役員用ページです。関係者以外の方のアクセスおよび情報の持ち出しは固くお断りいたします。なお、セキュリティ確保および不正アクセス防止のため、アクセスログ（接続元情報など）を記録・管理しております。
+                        ⚠️ 【重要】役員用ページです。関係者以外の方のアクセスおよび情報の持ち出しは固くお断りいたします。なお、セキュリティ確保および不正アクセス防止のため、アクセスログ（接続元IP・端末情報など）を記録・管理しております。
                     </p>
                     <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px; max-width: 400px;">
                         <input type="text" id="login-id" placeholder="役員ID" style="padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;" />
@@ -447,29 +447,47 @@
 <script src="js/app.js"></script>
 
 <script>
-    // ★先ほど取得したGASのウェブアプリのURLをここに貼り付けてください
+    // ★ご自身のGASのウェブアプリのURLを設定してください
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwQqhJ9dZmh4rZJyiuXJ8t_oTA7U2sOIFiLy1jFgSXWTR94MPzBJJDcg7jgOHJQIHyKTQ/exec";
 
-    // ログ送信共通関数
-    function sendAccessLog(type, userId, detail) {
+    // ログ送信関数（外部IP取得APIを挟んでからGASへ送信）
+    async function sendAccessLog(type, userId, detail) {
         if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes("ここに")) {
             console.warn("GASのURLが設定されていません。");
             return;
+        }
+
+        let clientIp = "取得失敗";
+        try {
+            // 無料のIP取得API（ipify）からグローバルIPを取得
+            const res = await fetch('https://api.ipify.org?format=json');
+            const data = await res.json();
+            clientIp = data.ip;
+        } catch (e) {
+            console.warn("IPアドレスの取得に失敗しました", e);
         }
 
         // 日本時間のフォーマット（YYYY/MM/DD hh:mm:ss）
         const now = new Date();
         const timestamp = now.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
 
+        // 詳細な端末情報（IP、解像度、言語、User-Agent）を一つにまとめる
+        const deviceInfo = [
+            `IP: ${clientIp}`,
+            `解像度: ${window.screen.width}x${window.screen.height}`,
+            `言語: ${navigator.language}`,
+            `UA: ${navigator.userAgent}`
+        ].join(" | ");
+
         const payload = {
             timestamp: timestamp,
             type: type,
             userId: userId || "未入力",
             detail: detail,
-            userAgent: navigator.userAgent
+            userAgent: deviceInfo // 端末情報のカラムにリッチなデータを格納
         };
 
-        // fetchを使って非同期でGASに送信（CORS対策としてno-cors、またはテキスト送受信）
+        // 非同期でGASに送信
         fetch(GAS_WEB_APP_URL, {
             method: "POST",
             mode: "no-cors", 
@@ -527,7 +545,7 @@
         const errorMsg = document.getElementById('login-error');
 
         if (inputId === 'kirara' && inputPass === 'kanji') {
-            // ログイン成功ログを記録
+            // ログイン成功ログを記録（非同期でIPや画面サイズ等も同時に送信）
             sendAccessLog("ログイン", inputId, "成功");
 
             errorMsg.style.display = 'none';
@@ -543,13 +561,11 @@
 
     // ファイルダウンロード処理
     function handleDownload(fileName) {
-        // 現在ログイン中のIDを取得（保存してある要素などから判定、またはセッション保持）
         const currentId = document.getElementById('login-id').value || "kirara";
         
         // ダウンロードログを記録
         sendAccessLog("ダウンロード", currentId, fileName);
 
-        // サンプルとしてアラート表示（実際の運用ではファイルリンクやダウンロード処理に置き換え）
         alert(fileName + ' のダウンロードログを記録しました。');
     }
 
