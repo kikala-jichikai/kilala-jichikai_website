@@ -322,7 +322,7 @@
             </div>
         </section>
 
-        <!-- 役員向けタブコンテンツ（ログ記載の注意文言を反映） -->
+        <!-- 役員向けタブコンテンツ -->
         <section id="officer" class="tab-content">
             <div class="info-card">
                 <h2>役員向けポータル</h2>
@@ -364,19 +364,19 @@
                         <p style="font-size: 0.9rem; color: #666; margin: 0 0 10px 0;">よく利用する申請書、名簿、マニュアル等をダウンロードできます。</p>
                         <ul class="file-download-list">
                             <li>
-                                <a href="#" onclick="alert('サンプルダウンロードです'); return false;">
+                                <a href="#" onclick="handleDownload('令和8年度_自治会役員名簿・連絡網.pdf'); return false;">
                                     <span>📄 令和8年度_自治会役員名簿・連絡網.pdf</span>
                                     <span class="file-meta">PDF (120KB)</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#" onclick="alert('サンプルダウンロードです'); return false;">
+                                <a href="#" onclick="handleDownload('自治会費収支報告書（テンプレート）.xlsx'); return false;">
                                     <span>📊 自治会費収支報告書（テンプレート）.xlsx</span>
                                     <span class="file-meta">Excel (45KB)</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#" onclick="alert('サンプルダウンロードです'); return false;">
+                                <a href="#" onclick="handleDownload('自治会館 施設利用申請書・手順書.pdf'); return false;">
                                     <span>📄 自治会館 施設利用申請書・手順書.pdf</span>
                                     <span class="file-meta">PDF (350KB)</span>
                                 </a>
@@ -447,6 +447,41 @@
 <script src="js/app.js"></script>
 
 <script>
+    // ★先ほど取得したGASのウェブアプリのURLをここに貼り付けてください
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwQqhJ9dZmh4rZJyiuXJ8t_oTA7U2sOIFiLy1jFgSXWTR94MPzBJJDcg7jgOHJQIHyKTQ/exec";
+
+    // ログ送信共通関数
+    function sendAccessLog(type, userId, detail) {
+        if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes("ここに")) {
+            console.warn("GASのURLが設定されていません。");
+            return;
+        }
+
+        // 日本時間のフォーマット（YYYY/MM/DD hh:mm:ss）
+        const now = new Date();
+        const timestamp = now.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
+
+        const payload = {
+            timestamp: timestamp,
+            type: type,
+            userId: userId || "未入力",
+            detail: detail,
+            userAgent: navigator.userAgent
+        };
+
+        // fetchを使って非同期でGASに送信（CORS対策としてno-cors、またはテキスト送受信）
+        fetch(GAS_WEB_APP_URL, {
+            method: "POST",
+            mode: "no-cors", 
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        }).catch(err => {
+            console.error("ログ送信エラー:", err);
+        });
+    }
+
     // タブ切り替えロジック（PC・スマホ両対応）
     document.addEventListener('DOMContentLoaded', function() {
         const towerBtns = document.querySelectorAll('.tower-btn');
@@ -485,19 +520,37 @@
         });
     });
 
-    // 役員向けログインモック処理
+    // 役員向けログイン処理
     function handleLogin() {
         const inputId = document.getElementById('login-id').value;
         const inputPass = document.getElementById('login-pass').value;
         const errorMsg = document.getElementById('login-error');
 
         if (inputId === 'kirara' && inputPass === 'kanji') {
+            // ログイン成功ログを記録
+            sendAccessLog("ログイン", inputId, "成功");
+
             errorMsg.style.display = 'none';
             document.getElementById('login-container').style.display = 'none';
             document.getElementById('officer-content').style.display = 'block';
         } else {
+            // ログイン失敗ログを記録
+            sendAccessLog("ログイン", inputId, "失敗（パスワードまたはID違い）");
+
             errorMsg.style.display = 'block';
         }
+    }
+
+    // ファイルダウンロード処理
+    function handleDownload(fileName) {
+        // 現在ログイン中のIDを取得（保存してある要素などから判定、またはセッション保持）
+        const currentId = document.getElementById('login-id').value || "kirara";
+        
+        // ダウンロードログを記録
+        sendAccessLog("ダウンロード", currentId, fileName);
+
+        // サンプルとしてアラート表示（実際の運用ではファイルリンクやダウンロード処理に置き換え）
+        alert(fileName + ' のダウンロードログを記録しました。');
     }
 
     // 役員向けログアウト処理
