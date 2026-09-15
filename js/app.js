@@ -1,15 +1,20 @@
 // ==========================================
-// app.js（絵文字アクセシビリティ対応版）
-// - 動的に生成する要素に aria-hidden / sr-only を付与
-// - ログイン・ログ送信・ダウンロードログを実装
+// app.js (全量)
+// - スプレッドシートからのデータ取得・描画
+// - タブ制御
+// - 役員向けログイン / ログ送信 / ダウンロードログ
+// - イベント委譲とグローバル公開で安定化
 // ==========================================
 
+// -------------------- 設定 --------------------
 const SHEET_ID = '1rwAyehf35erUJ_RAnHhblQTaVg5f2v0Tmm7LZEKi5pQ';
 
+// コンテンツ用 GID
 const NOTICE_GID = '0';
 const EVENT_GID = '895056638';
 const LINK_GID = '348535548';
 
+// 役員ページ用 GID
 const OFFICER_NOTICE_GID = '1832753520';
 const OFFICER_FILE_GID = '1119241247';
 const OFFICER_LINK_GID = '2118239597';
@@ -27,9 +32,11 @@ const OFFICER_CONTACT_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/
 // GAS Webアプリのエンドポイント（必要に応じて差し替え）
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwQqhJ9dZmh4rZJyiuXJ8t_oTA7U2sOIFiLy1jFgSXWTR94MPzBJJDcg7jgOHJQIHyKTQ/exec";
 
+// 新着・終了判定の閾値
 const NEW_THRESHOLD_DAYS = 3;
 const ENDING_SOON_THRESHOLD_DAYS = 3;
 
+// -------------------- ユーティリティ --------------------
 function parseCSVToRows(text) {
     const rows = [];
     let currentRow = [];
@@ -119,6 +126,7 @@ function isEndingSoon(endDateStr) {
     return diffDays >= 0 && diffDays <= ENDING_SOON_THRESHOLD_DAYS;
 }
 
+// -------------------- 描画処理 --------------------
 function renderItems(items, container, defaultCategory) {
     const visibleItems = items.filter(item => isVisible(item.date, item.endDate));
     if (visibleItems.length === 0) {
@@ -187,6 +195,7 @@ function renderLinks(items, container) {
     container.innerHTML = html;
 }
 
+// -------------------- データ取得 --------------------
 async function loadAndRenderNotices(url, container, defaultCategory) {
     try {
         const response = await fetch(url);
@@ -208,16 +217,17 @@ async function loadAndRenderNotices(url, container, defaultCategory) {
 
 async function loadNotices() {
     const container = document.getElementById('notice-container');
-    await loadAndRenderNotices(NOTICE_URL, container, 'お知らせ');
+    if (container) await loadAndRenderNotices(NOTICE_URL, container, 'お知らせ');
 }
 
 async function loadEvents() {
     const container = document.getElementById('event-container');
-    await loadAndRenderNotices(EVENT_URL, container, 'イベント');
+    if (container) await loadAndRenderNotices(EVENT_URL, container, 'イベント');
 }
 
 async function loadLinks() {
     const container = document.getElementById('links-container');
+    if (!container) return;
     try {
         const response = await fetch(LINK_URL);
         if (!response.ok) throw new Error('スプレッドシートの取得に失敗しました');
@@ -236,6 +246,7 @@ async function loadLinks() {
     }
 }
 
+// -------------------- 行データ変換 --------------------
 function parseNoticeRows(rows) {
     const items = [];
     for (let i = 1; i < rows.length; i++) {
@@ -271,6 +282,7 @@ function parseLinkRows(rows) {
     return items;
 }
 
+// -------------------- 役員ポータルデータ読み込み --------------------
 async function loadOfficerPortalData() {
     try {
         // 1. 伝言
@@ -289,6 +301,8 @@ async function loadOfficerPortalData() {
                     ? notices.map(item => `<li><strong>${escapeHtml(item.text)}</strong> ${item.date ? '(' + escapeHtml(item.date) + ')' : ''}</li>`).join('')
                     : '<li>現在、新しい伝言はありません。</li>';
             }
+        } else {
+            console.warn('OFFICER_NOTICE_URL fetch failed', noticeRes.status);
         }
 
         // 2. ファイル共有
@@ -312,21 +326,21 @@ async function loadOfficerPortalData() {
                         <li>
                           <a href="${escapeHtml(file.url)}" target="_blank" rel="noopener noreferrer" data-file-name="${escapeHtml(file.name)}" class="officer-file-link">
                             <span aria-hidden="true" class="icon-inline">📄</span><span class="sr-only">資料アイコン</span>
-                            <span> ${escapeHtml(file.name)}</span><span class="file-meta">${escapeHtml(file.meta)}</span>
+                            <span>${escapeHtml(file.name)}</span>
+                            <span class="file-meta">${escapeHtml(file.meta)}</span>
                           </a>
                         </li>`).join('')
                     : '<li>現在、共有ファイルはありません。</li>';
             }
+        } else {
+            console.warn('OFFICER_FILE_URL fetch failed', fileRes.status);
+        }
 
-            // ダウンロードリンクにイベントを付与
-            setTimeout(() => {
-                document.querySelectorAll('.officer-file-link').forEach(a => {
-                    a.addEventListener('click', (e) => {
-                        const fileName = a.getAttribute('data-file-name') || a.textContent.trim();
-                        handleDownload(fileName);
-                    });
-                });
-            }, 100);
+        // イベント委譲: dynamic-files の親でクリックを捕まえる（動的要素対応）
+        const fileContainer = document.getElementById('dynamic-files');
+        if (fileContainer) {
+            fileContainer.removeEventListener('click', fileClickHandler);
+            fileContainer.addEventListener('click', fileClickHandler);
         }
 
         // 3. クイックリンク
@@ -342,15 +356,11 @@ async function loadOfficerPortalData() {
             const linkList = document.getElementById('dynamic-links');
             if (linkList) {
                 linkList.innerHTML = links.length > 0
-                    ? links.map(link => `
-                        <li>
-                          <a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">
-                            <span aria-hidden="true" class="icon-inline">↗</span><span class="sr-only">外部サイト</span>
-                            <span>${escapeHtml(link.title)}</span>
-                          </a>
-                        </li>`).join('')
+                    ? links.map(link => `<li><a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer"><span aria-hidden="true" class="icon-inline">↗</span><span class="sr-only">外部サイト</span>${escapeHtml(link.title)}</a></li>`).join('')
                     : '<li>リンクはありません。</li>';
             }
+        } else {
+            console.warn('OFFICER_LINK_URL fetch failed', linkRes.status);
         }
 
         // 4. 緊急連絡先
@@ -370,21 +380,30 @@ async function loadOfficerPortalData() {
             const contactTable = document.getElementById('dynamic-contacts');
             if (contactTable) {
                 contactTable.innerHTML = contacts.length > 0
-                    ? contacts.map(c => `
-                        <tr style="border-bottom: 1px solid #eee;">
-                            <td style="padding: 6px;">${escapeHtml(c.role)}</td>
-                            <td style="padding: 6px;">${escapeHtml(c.name)}</td>
-                            <td style="padding: 6px;"><a href="tel:${escapeHtml(c.tel)}" class="mail-link">${escapeHtml(c.tel)}</a></td>
-                        </tr>`).join('')
+                    ? contacts.map(c => `<tr style="border-bottom: 1px solid #eee;"><td style="padding: 6px;">${escapeHtml(c.role)}</td><td style="padding: 6px;">${escapeHtml(c.name)}</td><td style="padding: 6px;"><a href="tel:${escapeHtml(c.tel)}" class="mail-link">${escapeHtml(c.tel)}</a></td></tr>`).join('')
                     : '<tr><td colspan="3" style="padding: 6px;">データがありません。</td></tr>';
             }
+        } else {
+            console.warn('OFFICER_CONTACT_URL fetch failed', contactRes.status);
         }
 
+        console.info('loadOfficerPortalData: completed');
     } catch (e) {
         console.error("役員ポータルデータ取得エラー:", e);
     }
 }
 
+// ファイルクリックの委譲ハンドラ
+function fileClickHandler(e) {
+    const a = e.target.closest && e.target.closest('a.officer-file-link');
+    if (!a) return;
+    const fileName = a.getAttribute('data-file-name') || a.textContent.trim();
+    // ログを送る（非同期）
+    handleDownload(fileName);
+    // リンクは通常通りブラウザに任せる
+}
+
+// -------------------- ログ送信 --------------------
 async function sendAccessLog(type, userId, detail) {
     let clientIp = '取得失敗';
     try {
@@ -393,7 +412,9 @@ async function sendAccessLog(type, userId, detail) {
             const d = await res.json();
             clientIp = d.ip || clientIp;
         }
-    } catch (e) {}
+    } catch (e) {
+        // IP取得失敗は致命的ではない
+    }
 
     const timestamp = new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
     const deviceInfo = `IP: ${clientIp} | ${window.screen.width}x${window.screen.height} | UA: ${navigator.userAgent}`;
@@ -406,6 +427,7 @@ async function sendAccessLog(type, userId, detail) {
         userAgent: deviceInfo
     };
 
+    // まずは CORS モードで送信を試みる
     try {
         const res = await fetch(GAS_WEB_APP_URL, {
             method: "POST",
@@ -423,6 +445,7 @@ async function sendAccessLog(type, userId, detail) {
         console.warn("ログ送信 (cors) でエラー:", e);
     }
 
+    // フォールバック: no-cors
     try {
         await fetch(GAS_WEB_APP_URL, {
             method: "POST",
@@ -438,6 +461,7 @@ async function sendAccessLog(type, userId, detail) {
     }
 }
 
+// -------------------- 認証・UI制御 --------------------
 function showOfficerUI() {
     const login = document.getElementById('login-container');
     const officer = document.getElementById('officer-content');
@@ -453,18 +477,23 @@ function hideOfficerUI() {
 }
 
 async function handleLogin() {
-    const inputId = (document.getElementById('login-id') || {}).value || '';
-    const inputPass = (document.getElementById('login-pass') || {}).value || '';
-    const errorMsg = document.getElementById('login-error');
+    try {
+        const inputId = (document.getElementById('login-id') || {}).value || '';
+        const inputPass = (document.getElementById('login-pass') || {}).value || '';
+        const errorMsg = document.getElementById('login-error');
 
-    if (inputId.trim() === 'kirara' && inputPass.trim() === 'kanji') {
-        sendAccessLog("ログイン", inputId, "成功").catch(() => {});
-        if (errorMsg) errorMsg.style.display = 'none';
-        showOfficerUI();
-        loadOfficerPortalData();
-    } else {
-        sendAccessLog("ログイン", inputId || "未入力", "失敗").catch(() => {});
-        if (errorMsg) errorMsg.style.display = 'block';
+        if (inputId.trim() === 'kirara' && inputPass.trim() === 'kanji') {
+            await sendAccessLog("ログイン", inputId, "成功");
+            if (errorMsg) errorMsg.style.display = 'none';
+            showOfficerUI();
+            // 認証成功後にデータを読み込む
+            loadOfficerPortalData();
+        } else {
+            await sendAccessLog("ログイン", inputId || "未入力", "失敗");
+            if (errorMsg) errorMsg.style.display = 'block';
+        }
+    } catch (e) {
+        console.error('handleLogin error:', e);
     }
 }
 
@@ -484,6 +513,12 @@ function handleDownload(fileName) {
     try { alert(fileName + ' のダウンロードログを記録しました。'); } catch (e) {}
 }
 
+// グローバルに公開（HTML の onclick フォールバックや外部からの呼び出しに対応）
+window.handleLogin = handleLogin;
+window.handleLogout = handleLogout;
+window.handleDownload = handleDownload;
+
+// -------------------- タブ切替 --------------------
 function initTabs() {
     const tabButtons = document.querySelectorAll('.tab-button');
     const towerBtns = document.querySelectorAll('.tower-btn');
@@ -504,14 +539,28 @@ function initTabs() {
     });
 }
 
+// -------------------- 初期化 --------------------
 document.addEventListener('DOMContentLoaded', () => {
-    initTabs();
-    loadNotices();
-    loadEvents();
-    loadLinks();
+    try {
+        initTabs();
+        loadNotices();
+        loadEvents();
+        loadLinks();
 
-    const loginBtn = document.getElementById('login-button');
-    const logoutBtn = document.getElementById('logout-button');
-    if (loginBtn) loginBtn.addEventListener('click', handleLogin);
-    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+        // ログイン・ログアウトボタンのバインド（冗長にして確実化）
+        const loginBtn = document.getElementById('login-button');
+        const logoutBtn = document.getElementById('logout-button');
+        if (loginBtn) {
+            loginBtn.removeEventListener('click', handleLogin);
+            loginBtn.addEventListener('click', handleLogin);
+        }
+        if (logoutBtn) {
+            logoutBtn.removeEventListener('click', handleLogout);
+            logoutBtn.addEventListener('click', handleLogout);
+        }
+
+        console.info('app.js initialized');
+    } catch (e) {
+        console.error('初期化エラー:', e);
+    }
 });
