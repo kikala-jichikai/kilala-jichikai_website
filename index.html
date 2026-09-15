@@ -1,546 +1,3 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>キララガーデン自治会</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-
-    <style>
-        .mobile-tower-wrapper { display: none; }
-        @media screen and (max-width: 768px) {
-            header .tab-nav { display: none !important; }
-            .mobile-tower-wrapper {
-                display: block !important;
-                background-color: var(--bg-color);
-                margin: 0;
-                padding: 0 0 40px 0;
-                font-family: 'BIZ UDGothic', sans-serif;
-            }
-            .tower-header-card {
-                background: var(--primary-color);
-                color: white;
-                text-align: center;
-                padding: 20px 15px;
-                border-radius: 0 0 16px 16px;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-                margin-bottom: 20px;
-            }
-            .tower-sub-line { font-size: 0.95rem; opacity: 0.9; margin-bottom: 0.2rem; }
-            .tower-main-line { font-size: 1.5rem; font-weight: 700; margin: 0; }
-            .tower-nav-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-                padding: 0 15px;
-                max-width: 600px;
-                margin: 0 auto 20px auto;
-            }
-            .tower-btn {
-                background: var(--card-bg);
-                border: 1px solid #d1ded3;
-                border-radius: 8px;
-                padding: 12px 10px;
-                text-align: center;
-                color: var(--primary-color);
-                font-size: 0.95rem;
-                font-weight: 700;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 6px;
-                font-family: inherit;
-                box-sizing: border-box;
-            }
-            .tower-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
-            .mobile-content-area { padding: 0 15px; max-width: 600px; margin: 0 auto; }
-            main .tab-content {
-                display: none !important;
-                background: var(--card-bg);
-                border-radius: 10px;
-                padding: 20px 16px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-                border: 1px solid #d1ded3;
-                border-top: 4px solid var(--primary-color);
-                box-sizing: border-box;
-            }
-            main .tab-content.active { display: block !important; }
-            body { background-color: var(--bg-color); margin: 0; padding: 0; }
-            header { padding: 0; background: none; }
-            header .header-title { display: none; }
-        }
-
-        .portal-section-box {
-            background: #f9fbf9;
-            border: 1px solid #e2ece3;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .portal-section-box h3 {
-            font-size: 1.05rem;
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 5px;
-            margin-top: 0;
-            margin-bottom: 12px;
-        }
-        .file-download-list, .link-portal-list { list-style: none; padding: 0; margin: 0; }
-        .file-download-list li, .link-portal-list li { margin-bottom: 8px; }
-        .file-download-list a, .link-portal-list a {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 12px;
-            background: #ffffff;
-            border: 1px solid #d1ded3;
-            border-radius: 6px;
-            color: #333;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: background 0.2s, border-color 0.2s;
-        }
-        .file-download-list a:hover, .link-portal-list a:hover { background: #f0f7f1; border-color: var(--primary-color); }
-        .file-meta { font-size: 0.8rem; color: #666; background: #eee; padding: 2px 6px; border-radius: 4px; }
-        .external-icon { font-size: 0.85rem; color: #b87a00; }
-    </style>
-</head>
-<body>
-
-    <!-- ヘッダーおよびPC用タブナビゲーション -->
-    <header>
-        <h1 class="header-title">
-            <span class="sub-line">さいたま市中央区円阿弥</span>
-            <span class="main-line">キララガーデン自治会</span>
-        </h1>
-        <nav class="tab-nav">
-            <button class="tab-button active" data-tab="notice">お知らせ</button>
-            <button class="tab-button" data-tab="board">今月の掲示板・回覧</button>
-            <button class="tab-button" data-tab="event">行事予定</button>
-            <button class="tab-button" data-tab="about">自治会について</button>
-            <button class="tab-button" data-tab="contact">ご意見・ご要望</button>
-            <button class="tab-button" data-tab="links">リンク</button>
-            <button class="tab-button" data-tab="officer">🔒 役員向け</button>
-        </nav>
-    </header>
-
-    <!-- モバイル用ヘッダーおよびグリッドナビゲーション -->
-    <div class="mobile-tower-wrapper">
-        <div class="tower-header-card">
-            <div class="tower-sub-line">さいたま市中央区円阿弥</div>
-            <h1 class="tower-main-line">キララガーデン自治会</h1>
-        </div>
-        <nav class="tower-nav-grid">
-            <button type="button" class="tower-btn active" data-tab="notice"><span>📢</span><span>お知らせ</span></button>
-            <button type="button" class="tower-btn" data-tab="board"><span>📋</span><span>今月の掲示板</span></button>
-            <button type="button" class="tower-btn" data-tab="event"><span>📅</span><span>行事予定</span></button>
-            <button type="button" class="tower-btn" data-tab="about"><span>🏠</span><span>自治会について</span></button>
-            <button type="button" class="tower-btn" data-tab="contact"><span>💬</span><span>ご意見・ご要望</span></button>
-            <button type="button" class="tower-btn" data-tab="links"><span>🔗</span><span>リンク</span></button>
-            <button type="button" class="tower-btn" data-tab="officer"><span>🔒</span><span>役員向け</span></button>
-            <div style="visibility: hidden;"></div>
-        </nav>
-    </div>
-
-    <!-- メインコンテンツエリア -->
-    <main>
-        <div class="mobile-content-area">
-            
-            <!-- お知らせタブ -->
-            <section id="notice" class="tab-content active">
-                <div id="notice-container"><p id="loading">読み込み中...</p></div>
-            </section>
-
-            <!-- 今月の掲示板タブ -->
-            <section id="board" class="tab-content">
-                <div class="board-highlight">
-                    <p style="margin-bottom: 1rem;">さいたま市中央区が発行する、今月の掲示ポスター・回覧文書はこちらから確認できます。</p>
-                    <ul class="link-list" style="margin-bottom: 0;">
-                        <li><a href="https://www.city.saitama.lg.jp/001/013/007/p074093.html" target="_blank" rel="noopener noreferrer"><span>📌 今月の掲示ポスター・回覧文書（さいたま市）</span><span class="external-icon">↗ 外部サイト</span></a></li>
-                    </ul>
-                </div>
-            </section>
-
-            <!-- 行事予定タブ -->
-            <section id="event" class="tab-content">
-                <div id="event-container"><p>読み込み中...</p></div>
-            </section>
-
-            <!-- 自治会についてタブ -->
-            <section id="about" class="tab-content">
-                <div class="info-card">
-                    <dl>
-                        <dt>自治会名</dt><dd>キララガーデン自治会</dd>
-                        <dt>設立</dt><dd>2007年9月</dd>
-                        <dt>所在地</dt><dd>〒338-0007 さいたま市中央区円阿弥5-8-50</dd>
-                        <dt>お問い合わせ</dt><dd><a href="mailto:kilala-jichi@gmail.com" class="mail-link">kilala-jichi@gmail.com</a></dd>
-                    </dl>
-                </div>
-            </section>
-            
-            <!-- ご意見・ご要望タブ（固定コンテンツ） -->
-            <section id="contact" class="tab-content">
-                <div class="notice-warning">
-                    <p><strong>⚠️ ご注意ください</strong></p>
-                    <p>
-                        こちらは<strong>自治会</strong>へのご意見・ご要望の窓口です。<br>
-                        マンションの管理・修繕・共用部分等に関する<strong>管理組合（理事会）</strong>へのお問い合わせはご遠慮ください。<br>
-                    </p>
-                    <p></p>
-                    <p>
-                        ※管理組合に関するお問い合わせは、別途管理組合の窓口（管理人室）までご連絡をお願いいたします。
-                    </p>
-                </div>
-
-                <div class="info-card">
-                    <p style="margin-bottom: 1rem;">
-                        自治会では、以下のような地域コミュニティ活動に関するご意見・ご要望を受け付けております。
-                    </p>
-                    <ul class="topic-list">
-                        <li>🏘️ 地域コミュニティ活動について</li>
-                        <li>🛡️ 防犯・防災に関するご相談</li>
-                        <li>🎉 地域行事・イベントへの参加について</li>
-                        <li>📋 回覧板・掲示物に関するお問い合わせ</li>
-                        <li>💬 その他、自治会活動全般に関するご意見</li>
-                    </ul>
-
-                    <p style="margin-top: 1.5rem;">
-                        ご意見・ご要望は、下記メールアドレスまでお気軽にお寄せください。
-                    </p>
-                    <p style="margin-top: 1rem;">
-                        <a href="mailto:kilala-jichi@gmail.com?subject=【ご意見・ご要望】" class="mail-link">
-                            kilala-jichi@gmail.com
-                        </a>
-                    </p>
-                </div>
-            </section>
-
-            <!-- リンクタブ -->
-            <section id="links" class="tab-content">
-                <div id="links-container"><p>読み込み中...</p></div>
-            </section>
-
-            <!-- 役員向けタブ -->
-            <section id="officer" class="tab-content">
-                <div class="info-card">
-                    <h2>役員向けポータル</h2>
-                    
-                    <!-- ログインフォームコンテナ -->
-                    <div id="login-container" style="margin-top: 15px;">
-                        <p style="color: #666; font-size: 0.95rem; line-height: 1.6;">
-                            ⚠️ 【重要】役員用ページです。関係者以外の方のアクセスおよび情報の持ち出しは固くお断りいたします。なお、セキュリティ確保のためアクセスログを記録しております。
-                        </p>
-                        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px; max-width: 400px;">
-                            <input type="text" id="login-id" placeholder="役員ID" style="padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;" />
-                            <input type="password" id="login-pass" placeholder="パスワード" style="padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;" />
-                            <button type="button" onclick="handleLogin()" style="padding: 10px; background: var(--primary-color); color: #fff; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; font-weight: bold;">ログイン</button>
-                            <p id="login-error" style="color: red; font-size: 0.85rem; margin: 0; display: none;">IDまたはパスワードが違います。</p>
-                        </div>
-                        <p style="font-size: 0.8rem; color: #666; margin-top: 15px;">※動作確認用モックID: <code>kirara</code> / PW: <code>kanji</code></p>
-                    </div>
-
-                    <!-- 認証成功後に表示される役員向けコンテンツ -->
-                    <div id="officer-content" style="display: none; margin-top: 15px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #e8f5e9; border: 1px solid #c8e6c9; padding: 10px 15px; border-radius: 6px; margin-bottom: 20px;">
-                            <span style="color: #2e7d32; font-weight: bold; font-size: 0.95rem;">✅ 認証成功：役員モードで接続中</span>
-                            <button type="button" onclick="handleLogout()" style="padding: 5px 12px; font-size: 0.85rem; background: #757575; color: #fff; border: none; border-radius: 4px; cursor: pointer;">ログアウト</button>
-                        </div>
-
-                        <!-- 1. 伝言・トピック -->
-                        <div class="portal-section-box">
-                            <h3>📌 役員専用 伝言・トピック</h3>
-                            <p style="font-size: 0.9rem; color: #666; margin: 0 0 10px 0;">定例会議の議事録サマリーや、今期の重要タスクを共有しています。</p>
-                            <ul id="dynamic-notices" style="margin: 0; padding-left: 20px; line-height: 1.8; font-size: 0.95rem;">
-                                <li>読み込み中...</li>
-                            </ul>
-                        </div>
-
-                        <!-- 2. ファイル共有 -->
-                        <div class="portal-section-box">
-                            <h3>📁 ファイル共有・各種フォーマット</h3>
-                            <p style="font-size: 0.9rem; color: #666; margin: 0 0 10px 0;">よく利用する申請書、名簿、マニュアル等をダウンロードできます。</p>
-                            <ul id="dynamic-files" class="file-download-list">
-                                <li>読み込み中...</li>
-                            </ul>
-                        </div>
-
-                        <!-- 3. クイックリンク -->
-                        <div class="portal-section-box">
-                            <h3>🔗 役員向けクイックリンク</h3>
-                            <p style="font-size: 0.9rem; color: #666; margin: 0 0 10px 0;">行政手続きやクラウドストレージなど、実務で頻繁に開くリンク集です。</p>
-                            <ul id="dynamic-links" class="link-portal-list">
-                                <li>読み込み中...</li>
-                            </ul>
-                        </div>
-
-                        <!-- 4. 緊急連絡先一覧 -->
-                        <div>
-                            <h3 style="color: #333; border-bottom: 2px solid var(--primary-color); padding-bottom: 6px; font-size: 1.1rem;">📞 役員間 緊急連絡先一覧</h3>
-                            <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem;">
-                                <thead>
-                                    <tr style="background: #f5f5f5; border-bottom: 1px solid #ddd;">
-                                        <th style="text-align: left; padding: 6px;">役職</th>
-                                        <th style="text-align: left; padding: 6px;">氏名</th>
-                                        <th style="text-align: left; padding: 6px;">連絡先</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="dynamic-contacts">
-                                    <tr><td colspan="3" style="padding: 6px;">読み込み中...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </div>
-    </main>
-
-    <!-- フッター -->
-    <footer>
-        <p>&copy; キララガーデン自治会</p>
-    </footer>
-
-    <!-- 外部スクリプト -->
-    <script src="js/app.js"></script>
-
-    <!-- インラインスクリプト（認証・ログ送信・動的スプレッドシートデータ取得） -->
-    <script>
-        // GAS WebアプリのエンドポイントURL（アクセスログ記録用）
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwQqhJ9dZmh4rZJyiuXJ8t_oTA7U2sOIFiLy1jFgSXWTR94MPzBJJDcg7jgOHJQIHyKTQ/exec";
-
-        /**
-         * アクセスログをGASへ送信する関数
-         */
-        async function sendAccessLog(type, userId, detail) {
-            let clientIp = "取得失敗";
-            try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                clientIp = data.ip;
-            } catch (e) {}
-
-            const timestamp = new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
-            const deviceInfo = [`IP: ${clientIp}`, `解像度: ${window.screen.width}x${window.screen.height}`, `UA: ${navigator.userAgent}`].join(" | ");
-
-            fetch(GAS_WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ timestamp, type, userId: userId || "未入力", detail, userAgent: deviceInfo })
-            }).catch(err => console.error(err));
-        }
-
-        /**
-         * CSV文字列を正確に2次元配列（行・列）にパースする関数（セル内改行・クォーテーション対応）
-         */
-        function parseCSVToRows(text) {
-            const rows = [];
-            let currentRow = [];
-            let currentField = '';
-            let inQuotes = false;
-
-            for (let i = 0; i < text.length; i++) {
-                const char = text[i];
-                const nextChar = text[i + 1];
-
-                if (inQuotes) {
-                    if (char === '"') {
-                        if (nextChar === '"') {
-                            currentField += '"';
-                            i++;
-                        } else {
-                            inQuotes = false;
-                        }
-                    } else {
-                        currentField += char;
-                    }
-                } else {
-                    if (char === '"') {
-                        inQuotes = true;
-                    } else if (char === ',') {
-                        currentRow.push(currentField);
-                        currentField = '';
-                    } else if (char === '\r') {
-                        if (nextChar === '\n') i++;
-                        currentRow.push(currentField);
-                        rows.push(currentRow);
-                        currentRow = [];
-                        currentField = '';
-                    } else if (char === '\n') {
-                        currentRow.push(currentField);
-                        rows.push(currentRow);
-                        currentRow = [];
-                        currentField = '';
-                    } else {
-                        currentField += char;
-                    }
-                }
-            }
-            if (currentField !== '' || currentRow.length > 0) {
-                currentRow.push(currentField);
-                rows.push(currentRow);
-            }
-            return rows;
-        }
-
-        /**
-         * XSS対策用のHTMLエスケープ関数
-         */
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        /**
-         * 指定されたスプレッドシート（4つのGID）からデータを動的に取得してHTMLに反映する関数
-         */
-        async function loadOfficerPortalDataFromSheets() {
-            const SHEET_ID = '1rwAyehf35erUJ_RAnHhblQTaVg5f2v0Tmm7LZEKi5pQ';
-            const OFFICER_NOTICE_GID = '1832753520';
-            const OFFICER_FILE_GID = '1119241247';
-            const OFFICER_LINK_GID = '2118239597';
-            const OFFICER_CONTACT_GID = '162722256';
-
-            try {
-                // 1. 伝言・トピックデータの取得
-                const noticeRes = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${OFFICER_NOTICE_GID}`);
-                if (noticeRes.ok) {
-                    const rows = parseCSVToRows(await noticeRes.text());
-                    const notices = [];
-                    for (let i = 1; i < rows.length; i++) {
-                        if (rows[i][0] && rows[i][0].trim() !== '') {
-                            notices.push({ date: rows[i][0].trim(), text: rows[i][1] ? rows[i][1].trim() : '' });
-                        }
-                    }
-                    const noticeList = document.getElementById('dynamic-notices');
-                    if (noticeList) {
-                        noticeList.innerHTML = notices.length > 0 
-                            ? notices.map(item => `<li><strong>${escapeHtml(item.text)}</strong> ${item.date ? '(' + escapeHtml(item.date) + ')' : ''}</li>`).join('')
-                            : '<li>現在、新しい伝言はありません。</li>';
-                    }
-                }
-
-                // 2. ファイル共有データの取得
-                const fileRes = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${OFFICER_FILE_GID}`);
-                if (fileRes.ok) {
-                    const rows = parseCSVToRows(await fileRes.text());
-                    const files = [];
-                    for (let i = 1; i < rows.length; i++) {
-                        if (rows[i][0] && rows[i][0].trim() !== '') {
-                            files.push({ 
-                                name: rows[i][0].trim(), 
-                                meta: rows[i][1] ? rows[i][1].trim() : 'PDF',
-                                url: rows[i][2] ? rows[i][2].trim() : '#'
-                            });
-                        }
-                    }
-                    const fileList = document.getElementById('dynamic-files');
-                    if (fileList) {
-                        fileList.innerHTML = files.length > 0
-                            ? files.map(file => `
-                                <li><a href="${escapeHtml(file.url)}" target="_blank" rel="noopener noreferrer" onclick="handleDownload('${escapeHtml(file.name)}');">
-                                    <span>📄 ${escapeHtml(file.name)}</span><span class="file-meta">${escapeHtml(file.meta)}</span>
-                                </a></li>`).join('')
-                            : '<li>現在、共有ファイルはありません。</li>';
-                    }
-                }
-
-                // 3. クイックリンクデータの取得
-                const linkRes = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${OFFICER_LINK_GID}`);
-                if (linkRes.ok) {
-                    const rows = parseCSVToRows(await linkRes.text());
-                    const links = [];
-                    for (let i = 1; i < rows.length; i++) {
-                        if (rows[i][0] && rows[i][0].trim() !== '' && rows[i][1]) {
-                            links.push({ title: rows[i][0].trim(), url: rows[i][1].trim() });
-                        }
-                    }
-                    const linkList = document.getElementById('dynamic-links');
-                    if (linkList) {
-                        linkList.innerHTML = links.length > 0
-                            ? links.map(link => `
-                                <li><a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">
-                                    <span>${escapeHtml(link.title)}</span><span class="external-icon">↗ 外部</span>
-                                </a></li>`).join('')
-                            : '<li>リンクはありません。</li>';
-                    }
-                }
-
-                // 4. 緊急連絡先データの取得
-                const contactRes = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${OFFICER_CONTACT_GID}`);
-                if (contactRes.ok) {
-                    const rows = parseCSVToRows(await contactRes.text());
-                    const contacts = [];
-                    for (let i = 1; i < rows.length; i++) {
-                        if (rows[i][0] && rows[i][0].trim() !== '') {
-                            contacts.push({
-                                role: rows[i][0].trim(),
-                                name: rows[i][1] ? rows[i][1].trim() : '',
-                                tel: rows[i][2] ? rows[i][2].trim() : ''
-                            });
-                        }
-                    }
-                    const contactTable = document.getElementById('dynamic-contacts');
-                    if (contactTable) {
-                        contactTable.innerHTML = contacts.length > 0
-                            ? contacts.map(c => `
-                                <tr style="border-bottom: 1px solid #eee;">
-                                    <td style="padding: 6px;">${escapeHtml(c.role)}</td>
-                                    <td style="padding: 6px;">${escapeHtml(c.name)}</td>
-                                    <td style="padding: 6px;"><a href="tel:${escapeHtml(c.tel)}" class="mail-link">${escapeHtml(c.tel)}</a></td>
-                                </tr>`).join('')
-                            : '<tr><td colspan="3" style="padding: 6px;">データがありません。</td></tr>';
-                    }
-                }
-
-            } catch (e) {
-                console.error("スプレッドシートデータ取得エラー:", e);
-            }
-        }
-
-        // タブ切り替え制御
-        document.addEventListener('DOMContentLoaded', function() {
-            const towerBtns = document.querySelectorAll('.tower-btn');
-            const pcTabBtns = document.querySelectorAll('.tab-button');
-            
-            function switchTab(targetTab) {
-                towerBtns.forEach(b => { if(b.getAttribute('data-tab') === targetTab) b.classList.add('active'); else b.classList.remove('active'); });
-                pcTabBtns.forEach(b => { if(b.getAttribute('data-tab') === targetTab) b.classList.add('active'); else b.classList.remove('active'); });
-
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                const targetContent = document.getElementById(targetTab);
-                if (targetContent) targetContent.classList.add('active');
-            }
-
-            towerBtns.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
-            pcTabBtns.forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
-        });
-
-        /**
-         * ログイン処理（モックID/PW検証、アクセスログ送信、データ読込トリガー）
-         */
-        function handleLogin() {
-            const inputId = document.getElementById('login-id').value;
-            const inputPass = document.getElementById('login-pass').value;
-            const errorMsg = document.getElementById('login-error');
-
-            if (inputId === 'kirara' && inputPass === 'kanji') {
-                sendAccessLog("ログイン", inputId, "成功");
-                errorMsg.style.display = 'none';
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('officer-content').style.display = 'block';
-                
-                // スプレッドシートからの動的データ取得を実行
-                loadOfficerPortalDataFromSheets();
 <!doctype html>
 <html lang="ja">
 <head>
@@ -554,14 +11,17 @@
   <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- 最小限のモバイル上書き（元の意図を尊重） -->
   <style>
-    /* 元ファイルの意図を残しつつ、セレクタを正しく指定 */
+    /* 最小限のモバイル用上書き（元の意図を尊重） */
     .mobile-tower-wrapper { display: none; }
     @media screen and (max-width: 768px) {
       header .tab-nav { display: none !important; }
       .mobile-tower-wrapper { display: block !important; }
     }
+    /* スクリーンリーダー用非表示ユーティリティ */
+    .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    /* 絵文字の視覚的余白 */
+    .icon-inline { margin-right: 0.4rem; vertical-align: middle; }
   </style>
 </head>
 <body>
@@ -575,10 +35,6 @@
       <span class="main-line">キララガーデン自治会</span>
     </div>
 
-    <!--
-      tab-button の data-tab 属性は main 内の section id と一致させています。
-      JS（js/app.js）の initTabs() がこれらを参照してタブ切替を行います。
-    -->
     <nav class="tab-nav" role="navigation" aria-label="メインナビゲーション">
       <button class="tab-button active" data-tab="notice" type="button">お知らせ</button>
       <button class="tab-button" data-tab="board" type="button">掲示板・回覧</button>
@@ -590,20 +46,13 @@
     </nav>
   </header>
 
-  <!-- ===========================
-       モバイル用タワー型UI（グリッドボタン）
-       - PCでは非表示、画面幅 <=768pxで表示
-       =========================== -->
+  <!-- モバイル用タワー型UI -->
   <div class="mobile-tower-wrapper" aria-hidden="false">
     <div class="tower-header-card">
       <div class="tower-sub-line">さいたま市中央区円阿弥</div>
       <h1 class="tower-main-line">キララガーデン自治会</h1>
     </div>
 
-    <!--
-      tower-btn の data-tab も同様に section id と一致させています。
-      タップで該当タブを開きます（js/app.js の initTabs と整合）。
-    -->
     <nav class="tower-nav-grid" role="navigation" aria-label="モバイルナビ">
       <button type="button" class="tower-btn active" data-tab="notice">お知らせ</button>
       <button type="button" class="tower-btn" data-tab="board">掲示板</button>
@@ -615,16 +64,12 @@
     </nav>
   </div>
 
-  <!-- ===========================
-       メインコンテンツ（各タブの section）
-       - id は js/app.js と一致させること（notice, board, event, about, contact, links, officer）
-       =========================== -->
+  <!-- メインコンテンツ -->
   <main>
     <div class="mobile-content-area">
 
       <!-- お知らせ -->
       <section id="notice" class="tab-content active" aria-labelledby="notice-heading">
-        <!-- js/app.js の loadNotices() がここに描画します -->
         <div id="notice-container"><p id="loading">読み込み中 ...</p></div>
       </section>
 
@@ -633,11 +78,10 @@
         <div class="board-highlight">
           <p style="margin-bottom:1rem;">さいたま市中央区が発行する、今月の掲示ポスター・回覧文書はこちらから確認できます。</p>
           <ul class="link-list" style="margin-bottom:0;">
-            <!-- 外部リンクは target="_blank" と rel を付与 -->
             <li>
               <a href="https://www.city.saitama.lg.jp/001/013/007/p074093.html" target="_blank" rel="noopener noreferrer">
+                <span aria-hidden="true" class="icon-inline">↗</span><span class="sr-only">外部サイトアイコン</span>
                 <span>☆ 今月の掲示ポスター・回覧文書(さいたま市)</span>
-                <span class="external-icon">↗ 外部サイト</span>
               </a>
             </li>
           </ul>
@@ -664,18 +108,21 @@
       <!-- ご意見・ご要望 -->
       <section id="contact" class="tab-content" aria-labelledby="contact-heading">
         <div class="notice-warning">
-          <p><strong>ご注意ください</strong></p>
+          <p>
+            <span aria-hidden="true" class="icon-inline">⚠</span><span class="sr-only">注意アイコン</span>
+            <strong>ご注意ください</strong>
+          </p>
           <p>こちらは自治会へのご意見・ご要望の窓口です。マンションの管理・修繕・共用部分等に関するお問い合わせは管理組合へお願いします。</p>
         </div>
 
         <div class="info-card">
           <p style="margin-bottom:1rem;">自治会では、以下のような地域コミュニティ活動に関するご意見・ご要望を受け付けています。</p>
           <ul class="topic-list">
-            <li>防犯・防災に関するご相談</li>
-            <li>地域コミュニティ活動について</li>
-            <li>地域行事・イベントへの参加について</li>
-            <li>回覧板・掲示物に関するお問い合わせ</li>
-            <li>その他、自治会活動全般に関するご意見</li>
+            <li><span aria-hidden="true" class="icon-inline">🔔</span><span class="sr-only">ベルアイコン</span> 防犯・防災に関するご相談</li>
+            <li><span aria-hidden="true" class="icon-inline">🤝</span><span class="sr-only">握手アイコン</span> 地域コミュニティ活動について</li>
+            <li><span aria-hidden="true" class="icon-inline">🎪</span><span class="sr-only">イベントアイコン</span> 地域行事・イベントへの参加について</li>
+            <li><span aria-hidden="true" class="icon-inline">📣</span><span class="sr-only">回覧アイコン</span> 回覧板・掲示物に関するお問い合わせ</li>
+            <li><span aria-hidden="true" class="icon-inline">✉️</span><span class="sr-only">その他アイコン</span> その他、自治会活動全般に関するご意見</li>
           </ul>
           <p style="margin-top:1.5rem;">ご意見・ご要望は下記メールアドレスまでお気軽にお寄せください。</p>
           <p style="margin-top:1rem;"><a href="mailto:kilala-jichi@gmail.com?subject=【ご意見・ご要望】" class="mail-link">kilala-jichi@gmail.com</a></p>
@@ -695,7 +142,8 @@
           <!-- ログインフォーム（モック） -->
           <div id="login-container" style="margin-top:15px;">
             <p style="color:#666;font-size:0.95rem;line-height:1.6;">
-              ⚠【重要】役員用ページです。関係者以外のアクセスおよび情報の持ち出しは固くお断りします。アクセスログを記録しています。
+              <span aria-hidden="true" class="icon-inline">⚠</span><span class="sr-only">注意アイコン</span>
+              【重要】役員用ページです。関係者以外のアクセスおよび情報の持ち出しは固くお断りします。アクセスログを記録しています。
             </p>
 
             <div style="display:flex;flex-direction:column;gap:10px;margin-top:15px;max-width:400px;">
@@ -710,7 +158,7 @@
             <p style="font-size:0.8rem;color:#666;margin-top:15px;">※動作確認用モック ID: <code>kirara</code> / PW: <code>kanji</code></p>
           </div>
 
-          <!-- 認証成功後の表示領域（js/app.js の handleLogin/handleLogout と連携） -->
+          <!-- 認証成功後の表示領域 -->
           <div id="officer-content" style="display:none;margin-top:15px;">
             <div style="display:flex;justify-content:space-between;align-items:center;background:#e8f5e9;border:1px solid #c8e6c9;padding:10px 15px;border-radius:6px;margin-bottom:20px;">
               <span style="color:#2e7d32;font-weight:bold;font-size:0.95rem;">認証成功: 役員モードで接続中</span>
@@ -772,37 +220,8 @@
     <p>&copy; キララガーデン自治会</p>
   </footer>
 
-  <!-- 外部スクリプト（差し替えは js/app.js を置き換えてください） -->
+  <!-- 外部スクリプト（差し替え用） -->
   <script src="js/app.js"></script>
-
-  <!--
-    最小限のイベントバインド（app.js の関数が存在する場合に呼び出す）
-    - 不要な重複ロジックは削除しました（元ファイルの壊れたインラインCSVパーサ等は削除）。
-    - 実際のデータ取得・描画は js/app.js に委譲しています。
-  -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // タブ切替（js/app.js の initTabs() が既に実装されている場合は二重実行にならないよう軽量に）
-      document.querySelectorAll('.tab-button, .tower-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-          const target = this.getAttribute('data-tab');
-          if (!target) return;
-          document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-          document.querySelectorAll('.tower-btn').forEach(b => b.classList.remove('active'));
-          this.classList.add('active');
-          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-          const targetContent = document.getElementById(target);
-          if (targetContent) targetContent.classList.add('active');
-        });
-      });
-
-      // ログイン・ログアウトボタンのバインド（js/app.js に handleLogin/handleLogout がある前提）
-      const loginBtn = document.getElementById('login-button');
-      const logoutBtn = document.getElementById('logout-button');
-      if (loginBtn) loginBtn.addEventListener('click', () => { if (typeof handleLogin === 'function') handleLogin(); });
-      if (logoutBtn) logoutBtn.addEventListener('click', () => { if (typeof handleLogout === 'function') handleLogout(); });
-    });
-  </script>
 
 </body>
 </html>
