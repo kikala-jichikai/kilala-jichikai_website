@@ -541,30 +541,268 @@
                 
                 // スプレッドシートからの動的データ取得を実行
                 loadOfficerPortalDataFromSheets();
-            } else {
-                sendAccessLog("ログイン", inputId, "失敗");
-                errorMsg.style.display = 'block';
-            }
-        }
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>キララガーデン自治会</title>
 
-        /**
-         * ダウンロード時のログ記録関数
-         */
-        function handleDownload(fileName) {
-            const currentId = document.getElementById('login-id').value || "kirara";
-            sendAccessLog("ダウンロード", currentId, fileName);
-            alert(fileName + ' のダウンロードログを記録しました。');
-        }
+  <!-- フォントとスタイル -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 
-        /**
-         * ログアウト処理
-         */
-        function handleLogout() {
-            document.getElementById('login-id').value = '';
-            document.getElementById('login-pass').value = '';
-            document.getElementById('login-container').style.display = 'block';
-            document.getElementById('officer-content').style.display = 'none';
-        }
-    </script>
+  <!-- 最小限のモバイル上書き（元の意図を尊重） -->
+  <style>
+    /* 元ファイルの意図を残しつつ、セレクタを正しく指定 */
+    .mobile-tower-wrapper { display: none; }
+    @media screen and (max-width: 768px) {
+      header .tab-nav { display: none !important; }
+      .mobile-tower-wrapper { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===========================
+       ヘッダー（PC用タブナビ）
+       =========================== -->
+  <header>
+    <div class="header-title" role="banner">
+      <span class="sub-line">さいたま市中央区円阿弥</span>
+      <span class="main-line">キララガーデン自治会</span>
+    </div>
+
+    <!--
+      tab-button の data-tab 属性は main 内の section id と一致させています。
+      JS（js/app.js）の initTabs() がこれらを参照してタブ切替を行います。
+    -->
+    <nav class="tab-nav" role="navigation" aria-label="メインナビゲーション">
+      <button class="tab-button active" data-tab="notice" type="button">お知らせ</button>
+      <button class="tab-button" data-tab="board" type="button">掲示板・回覧</button>
+      <button class="tab-button" data-tab="event" type="button">行事予定</button>
+      <button class="tab-button" data-tab="about" type="button">自治会について</button>
+      <button class="tab-button" data-tab="contact" type="button">ご意見・ご要望</button>
+      <button class="tab-button" data-tab="links" type="button">リンク</button>
+      <button class="tab-button" data-tab="officer" type="button">役員向け</button>
+    </nav>
+  </header>
+
+  <!-- ===========================
+       モバイル用タワー型UI（グリッドボタン）
+       - PCでは非表示、画面幅 <=768pxで表示
+       =========================== -->
+  <div class="mobile-tower-wrapper" aria-hidden="false">
+    <div class="tower-header-card">
+      <div class="tower-sub-line">さいたま市中央区円阿弥</div>
+      <h1 class="tower-main-line">キララガーデン自治会</h1>
+    </div>
+
+    <!--
+      tower-btn の data-tab も同様に section id と一致させています。
+      タップで該当タブを開きます（js/app.js の initTabs と整合）。
+    -->
+    <nav class="tower-nav-grid" role="navigation" aria-label="モバイルナビ">
+      <button type="button" class="tower-btn active" data-tab="notice">お知らせ</button>
+      <button type="button" class="tower-btn" data-tab="board">掲示板</button>
+      <button type="button" class="tower-btn" data-tab="event">行事予定</button>
+      <button type="button" class="tower-btn" data-tab="about">自治会について</button>
+      <button type="button" class="tower-btn" data-tab="contact">ご意見・ご要望</button>
+      <button type="button" class="tower-btn" data-tab="links">リンク</button>
+      <button type="button" class="tower-btn" data-tab="officer">役員向け</button>
+    </nav>
+  </div>
+
+  <!-- ===========================
+       メインコンテンツ（各タブの section）
+       - id は js/app.js と一致させること（notice, board, event, about, contact, links, officer）
+       =========================== -->
+  <main>
+    <div class="mobile-content-area">
+
+      <!-- お知らせ -->
+      <section id="notice" class="tab-content active" aria-labelledby="notice-heading">
+        <!-- js/app.js の loadNotices() がここに描画します -->
+        <div id="notice-container"><p id="loading">読み込み中 ...</p></div>
+      </section>
+
+      <!-- 掲示板 -->
+      <section id="board" class="tab-content" aria-labelledby="board-heading">
+        <div class="board-highlight">
+          <p style="margin-bottom:1rem;">さいたま市中央区が発行する、今月の掲示ポスター・回覧文書はこちらから確認できます。</p>
+          <ul class="link-list" style="margin-bottom:0;">
+            <!-- 外部リンクは target="_blank" と rel を付与 -->
+            <li>
+              <a href="https://www.city.saitama.lg.jp/001/013/007/p074093.html" target="_blank" rel="noopener noreferrer">
+                <span>☆ 今月の掲示ポスター・回覧文書(さいたま市)</span>
+                <span class="external-icon">↗ 外部サイト</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 行事予定 -->
+      <section id="event" class="tab-content" aria-labelledby="event-heading">
+        <div id="event-container"><p>読み込み中 ...</p></div>
+      </section>
+
+      <!-- 自治会について -->
+      <section id="about" class="tab-content" aria-labelledby="about-heading">
+        <div class="info-card">
+          <dl>
+            <dt>自治会名</dt><dd>キララガーデン自治会</dd>
+            <dt>設立</dt><dd>2007年9月</dd>
+            <dt>所在地</dt><dd>〒338-0007 さいたま市中央区円阿弥5-8-50</dd>
+            <dt>お問い合わせ</dt><dd><a href="mailto:kilala-jichi@gmail.com" class="mail-link">kilala-jichi@gmail.com</a></dd>
+          </dl>
+        </div>
+      </section>
+
+      <!-- ご意見・ご要望 -->
+      <section id="contact" class="tab-content" aria-labelledby="contact-heading">
+        <div class="notice-warning">
+          <p><strong>ご注意ください</strong></p>
+          <p>こちらは自治会へのご意見・ご要望の窓口です。マンションの管理・修繕・共用部分等に関するお問い合わせは管理組合へお願いします。</p>
+        </div>
+
+        <div class="info-card">
+          <p style="margin-bottom:1rem;">自治会では、以下のような地域コミュニティ活動に関するご意見・ご要望を受け付けています。</p>
+          <ul class="topic-list">
+            <li>防犯・防災に関するご相談</li>
+            <li>地域コミュニティ活動について</li>
+            <li>地域行事・イベントへの参加について</li>
+            <li>回覧板・掲示物に関するお問い合わせ</li>
+            <li>その他、自治会活動全般に関するご意見</li>
+          </ul>
+          <p style="margin-top:1.5rem;">ご意見・ご要望は下記メールアドレスまでお気軽にお寄せください。</p>
+          <p style="margin-top:1rem;"><a href="mailto:kilala-jichi@gmail.com?subject=【ご意見・ご要望】" class="mail-link">kilala-jichi@gmail.com</a></p>
+        </div>
+      </section>
+
+      <!-- リンク -->
+      <section id="links" class="tab-content" aria-labelledby="links-heading">
+        <div id="links-container"><p>読み込み中 ...</p></div>
+      </section>
+
+      <!-- 役員向けポータル -->
+      <section id="officer" class="tab-content" aria-labelledby="officer-heading">
+        <div class="info-card">
+          <h2>役員向けポータル</h2>
+
+          <!-- ログインフォーム（モック） -->
+          <div id="login-container" style="margin-top:15px;">
+            <p style="color:#666;font-size:0.95rem;line-height:1.6;">
+              ⚠【重要】役員用ページです。関係者以外のアクセスおよび情報の持ち出しは固くお断りします。アクセスログを記録しています。
+            </p>
+
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:15px;max-width:400px;">
+              <label for="login-id" class="sr-only">ID</label>
+              <input type="text" id="login-id" placeholder="ID" style="padding:10px;border:1px solid #ccc;border-radius:4px;font-size:1rem;" />
+              <label for="login-pass" class="sr-only">パスワード</label>
+              <input type="password" id="login-pass" placeholder="パスワード" style="padding:10px;border:1px solid #ccc;border-radius:4px;font-size:1rem;" />
+              <button type="button" id="login-button" style="padding:10px;background:var(--primary-color);color:#fff;border:none;border-radius:4px;font-size:1rem;cursor:pointer;font-weight:bold;">ログイン</button>
+              <p id="login-error" style="color:red;font-size:0.85rem;margin:0;display:none;">IDまたはパスワードが違います。</p>
+            </div>
+
+            <p style="font-size:0.8rem;color:#666;margin-top:15px;">※動作確認用モック ID: <code>kirara</code> / PW: <code>kanji</code></p>
+          </div>
+
+          <!-- 認証成功後の表示領域（js/app.js の handleLogin/handleLogout と連携） -->
+          <div id="officer-content" style="display:none;margin-top:15px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;background:#e8f5e9;border:1px solid #c8e6c9;padding:10px 15px;border-radius:6px;margin-bottom:20px;">
+              <span style="color:#2e7d32;font-weight:bold;font-size:0.95rem;">認証成功: 役員モードで接続中</span>
+              <button type="button" id="logout-button" style="padding:5px 12px;font-size:0.85rem;background:#757575;color:#fff;border:none;border-radius:4px;cursor:pointer;">ログアウト</button>
+            </div>
+
+            <!-- 1. 伝言・トピック -->
+            <div class="portal-section-box">
+              <h3>☆ 役員専用 伝言・トピック</h3>
+              <p style="font-size:0.9rem;color:#666;margin:0 0 10px 0;">定例会議の議事録サマリーや、今期の重要タスクを共有しています。</p>
+              <ul id="dynamic-notices" style="margin:0;padding-left:20px;line-height:1.8;font-size:0.95rem;">
+                <li>読み込み中 ...</li>
+              </ul>
+            </div>
+
+            <!-- 2. ファイル共有 -->
+            <div class="portal-section-box">
+              <h3>□ ファイル共有・各種フォーマット</h3>
+              <p style="font-size:0.9rem;color:#666;margin:0 0 10px 0;">よく利用する申請書、名簿、マニュアル等をダウンロードできます。</p>
+              <ul id="dynamic-files" class="file-download-list">
+                <li>読み込み中 ...</li>
+              </ul>
+            </div>
+
+            <!-- 3. クイックリンク -->
+            <div class="portal-section-box">
+              <h3>役員向けクイックリンク</h3>
+              <p style="font-size:0.9rem;color:#666;margin:0 0 10px 0;">行政手続きやクラウドストレージなど、実務で頻繁に開くリンク集です。</p>
+              <ul id="dynamic-links" class="link-portal-list">
+                <li>読み込み中 ...</li>
+              </ul>
+            </div>
+
+            <!-- 4. 緊急連絡先 -->
+            <div>
+              <h3 style="color:#333;border-bottom:2px solid var(--primary-color);padding-bottom:6px;font-size:1.1rem;">役員間 緊急連絡先一覧</h3>
+              <table style="width:100%;border-collapse:collapse;margin-top:10px;">
+                <thead>
+                  <tr style="background:#f5f5f5;border-bottom:1px solid #ddd;">
+                    <th style="text-align:left;padding:6px;">役職</th>
+                    <th style="text-align:left;padding:6px;">氏名</th>
+                    <th style="text-align:left;padding:6px;">連絡先</th>
+                  </tr>
+                </thead>
+                <tbody id="dynamic-contacts">
+                  <tr><td colspan="3" style="padding:6px;">読み込み中 ...</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; キララガーデン自治会</p>
+  </footer>
+
+  <!-- 外部スクリプト（差し替えは js/app.js を置き換えてください） -->
+  <script src="js/app.js"></script>
+
+  <!--
+    最小限のイベントバインド（app.js の関数が存在する場合に呼び出す）
+    - 不要な重複ロジックは削除しました（元ファイルの壊れたインラインCSVパーサ等は削除）。
+    - 実際のデータ取得・描画は js/app.js に委譲しています。
+  -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // タブ切替（js/app.js の initTabs() が既に実装されている場合は二重実行にならないよう軽量に）
+      document.querySelectorAll('.tab-button, .tower-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const target = this.getAttribute('data-tab');
+          if (!target) return;
+          document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tower-btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+          const targetContent = document.getElementById(target);
+          if (targetContent) targetContent.classList.add('active');
+        });
+      });
+
+      // ログイン・ログアウトボタンのバインド（js/app.js に handleLogin/handleLogout がある前提）
+      const loginBtn = document.getElementById('login-button');
+      const logoutBtn = document.getElementById('logout-button');
+      if (loginBtn) loginBtn.addEventListener('click', () => { if (typeof handleLogin === 'function') handleLogin(); });
+      if (logoutBtn) logoutBtn.addEventListener('click', () => { if (typeof handleLogout === 'function') handleLogout(); });
+    });
+  </script>
+
 </body>
 </html>
